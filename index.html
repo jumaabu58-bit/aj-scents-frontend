@@ -93,9 +93,9 @@
       color: white;
       border: 1px solid #555;
     }
-    .btn-flutterwave {
-      background: #f5a623;
-      color: #000;
+    .btn-pay {
+      background: #1a73e8;
+      color: white;
       width: 100%;
       padding: 14px;
       border: none;
@@ -108,6 +108,10 @@
       justify-content: center;
       gap: 10px;
       margin-bottom: 10px;
+    }
+    .btn-pay:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
     .section {
       padding: 45px 4%;
@@ -419,7 +423,7 @@
     </div>
   </section>
 
-  <!-- Cart -->
+  <!-- Cart Sidebar -->
   <div class="overlay" id="overlay"></div>
   <div class="cart-sidebar" id="cart-sidebar">
     <div class="cart-header">
@@ -436,33 +440,38 @@
     </div>
   </div>
 
-  <!-- Checkout -->
+  <!-- Checkout Modal -->
   <div class="checkout-modal" id="checkout-modal">
     <div class="checkout-box">
       <div id="checkout-form-view">
         <h2>Checkout</h2>
+        
         <div class="form-group">
           <label>Full Name</label>
           <input type="text" id="customer-name" placeholder="Enter your full name">
         </div>
+        
         <div class="form-group">
           <label>Phone Number</label>
           <input type="tel" id="customer-phone" placeholder="e.g. 07XXXXXXXX">
         </div>
+
         <div class="form-group">
           <label>Email (optional)</label>
           <input type="email" id="customer-email" placeholder="you@example.com">
         </div>
+        
         <div class="form-group">
           <label>Delivery Address</label>
           <textarea id="customer-address" placeholder="Street, Area, City"></textarea>
         </div>
+
         <div class="form-group">
           <label>Preferred Payment Method</label>
           <div class="payment-methods">
-            <div class="payment-option selected" data-method="flutterwave">
-              <i class="fas fa-credit-card" style="color:#f5a623;"></i>
-              <span>Flutterwave</span>
+            <div class="payment-option selected" data-method="pesapal">
+              <i class="fas fa-credit-card" style="color:#1a73e8;"></i>
+              <span>Pesapal</span>
               <small>Card / MoMo</small>
             </div>
             <div class="payment-option" data-method="mtn">
@@ -482,24 +491,31 @@
             </div>
           </div>
         </div>
+
         <div class="order-summary" id="order-summary"></div>
-        <button class="btn-flutterwave" id="place-order-btn">
+
+        <button class="btn-pay" id="place-order-btn">
           <i class="fas fa-lock"></i>
-          <span id="pay-btn-text">Pay with Flutterwave</span>
+          <span id="pay-btn-text">Pay with Pesapal</span>
         </button>
+
         <button class="btn btn-outline" style="width:100%;" id="cancel-checkout-btn">Cancel</button>
       </div>
+
       <div class="success-message" id="success-message">
         <i class="fas fa-check-circle"></i>
-        <h2 style="color:#4ade80;">Order Created!</h2>
-        <p style="margin:12px 0 8px; opacity:0.9;" id="success-text">Redirecting you to payment...</p>
-        <p style="margin-bottom:25px; opacity:0.75; font-size:0.9rem;" id="payment-info"></p>
+        <h2 style="color: #4ade80;">Order Created!</h2>
+        <p style="margin: 12px 0 8px; opacity: 0.9;" id="success-text">Redirecting you to secure payment...</p>
+        <p style="margin-bottom: 25px; opacity: 0.75; font-size: 0.9rem;" id="payment-info"></p>
       </div>
     </div>
   </div>
 
+  <!-- WhatsApp Button -->
   <a href="https://wa.me/256705127282?text=Hello%20AJ%20Scents%2C%20I%20would%20like%20to%20inquire%20about%20your%20perfumes." 
-     class="whatsapp-btn" target="_blank" rel="noopener">
+     class="whatsapp-btn" 
+     target="_blank"
+     rel="noopener">
     <i class="fab fa-whatsapp"></i>
   </a>
 
@@ -514,7 +530,7 @@
 
     let products = [];
     let cart = [];
-    let selectedPayment = 'flutterwave';
+    let selectedPayment = 'pesapal';
 
     async function loadProducts() {
       try {
@@ -688,15 +704,18 @@
 
       const payBtn = document.getElementById('place-order-btn');
       const payBtnText = document.getElementById('pay-btn-text');
+
       payBtn.disabled = true;
       payBtnText.textContent = 'Processing...';
 
       try {
+        // 1. Create Order
         const orderRes = await fetch(`${API_URL}/orders`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            name, phone,
+            name,
+            phone,
             email: email || null,
             address,
             paymentMethod: selectedPayment,
@@ -708,26 +727,46 @@
         });
 
         const orderData = await orderRes.json();
-        if (!orderData.success) throw new Error(orderData.message || 'Failed to create order');
 
+        if (!orderData.success) {
+          throw new Error(orderData.message || 'Failed to create order');
+        }
+
+        const orderId = orderData.data.id;
+
+        // 2. Initialize Pesapal Payment
+        const paymentRes = await fetch(`${API_URL}/payments/initialize`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId })
+        });
+
+        const paymentData = await paymentRes.json();
+
+        if (!paymentData.success) {
+          throw new Error(paymentData.message || 'Failed to initialize payment');
+        }
+
+        // 3. Show success and redirect
         document.getElementById('checkout-form-view').style.display = 'none';
         document.getElementById('success-message').style.display = 'block';
-        document.getElementById('success-text').textContent = 'Order created successfully!';
-        document.getElementById('payment-info').textContent = `Order Number: ${orderData.data.orderNumber}`;
+        document.getElementById('success-text').textContent = 'Redirecting you to secure payment...';
+        document.getElementById('payment-info').textContent = `Order: ${orderData.data.orderNumber}`;
 
+        // Clear cart
         cart = [];
         updateCartCount();
 
+        // Redirect to Pesapal
         setTimeout(() => {
-          alert('Order placed successfully!\nOrder Number: ' + orderData.data.orderNumber);
-          closeCheckout();
-        }, 2000);
+          window.location.href = paymentData.data.paymentLink;
+        }, 1500);
 
       } catch (error) {
         console.error(error);
         alert(error.message || 'Something went wrong. Please try again.');
         payBtn.disabled = false;
-        payBtnText.textContent = 'Pay with Flutterwave';
+        payBtnText.textContent = 'Pay with Pesapal';
       }
     }
 
