@@ -31,7 +31,7 @@
       border-bottom: 1px solid var(--gold);
     }
     .logo {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--gold);
       letter-spacing: 1px;
@@ -59,7 +59,7 @@
       font-weight: bold;
     }
     .hero {
-      min-height: 70vh;
+      min-height: 65vh;
       background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), #111;
       display: flex;
       align-items: center;
@@ -68,7 +68,7 @@
       padding: 100px 20px 50px;
     }
     .hero h1 {
-      font-size: clamp(2rem, 6.5vw, 3rem);
+      font-size: clamp(1.9rem, 6vw, 2.8rem);
       color: var(--gold);
       margin-bottom: 12px;
     }
@@ -152,7 +152,7 @@
     }
     .product-card img {
       width: 100%;
-      height: 240px;
+      height: 250px;
       object-fit: cover;
       display: block;
       background: #2a2a2a;
@@ -369,7 +369,7 @@
   <section class="hero">
     <div>
       <h1>Premium Lifestyle Collection</h1>
-      <p>Luxury perfumes, stylish shoes and exclusive accessories — all in one place.</p>
+      <p>Luxury perfumes, stylish shoes and exclusive bags — all in one place.</p>
       <button class="btn" id="shop-now-btn">Shop Now</button>
     </div>
   </section>
@@ -380,7 +380,7 @@
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="perfume">Perfumes</button>
       <button class="filter-btn" data-filter="shoes">Shoes</button>
-      <button class="filter-btn" data-filter="accessories">Accessories</button>
+      <button class="filter-btn" data-filter="bags">Bags</button>
     </div>
     <div class="products" id="products"></div>
   </section>
@@ -434,14 +434,14 @@
     </div>
   </div>
 
-  <a href="https://wa.me/256705127282?text=Hello%20AJ%20Scents%2C%20I%20would%20like%20to%20inquire%20about%20your%20products." 
+  <a href="https://wa.me/256705127282?text=Hello%20AJ%20Scents%20%26%20More%2C%20I%20would%20like%20to%20inquire%20about%20your%20products." 
      class="whatsapp-btn" target="_blank" rel="noopener">
     <i class="fab fa-whatsapp"></i>
   </a>
 
   <footer>
     <p>© 2026 AJ Scents & More • Kampala, Uganda</p>
-    <p style="margin-top:6px;">Premium Perfumes • Shoes • Accessories</p>
+    <p style="margin-top:6px;">Premium Perfumes • Shoes • Bags</p>
   </footer>
 
   <script>
@@ -451,18 +451,27 @@
       { id: 2, name: "Rose Whisper", category: "perfume", price: 165000, image: "https://images.pexels.com/photos/965990/pexels-photo-965990.jpeg" },
       { id: 3, name: "Ocean Breeze", category: "perfume", price: 145000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
       { id: 4, name: "Golden Oud", category: "perfume", price: 245000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
-      { id: 5, name: "Vanilla Dream", category: "perfume", price: 155000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
 
-      // Shoes
-      { id: 6, name: "Classic Leather Boots", category: "shoes", price: 320000, image: "https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg" },
-      { id: 7, name: "White Sneakers", category: "shoes", price: 210000, image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg" },
-      { id: 8, name: "Elegant Heels", category: "shoes", price: 280000, image: "https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg" },
-      { id: 9, name: "Casual Loafers", category: "shoes", price: 195000, image: "https://images.pexels.com/photos/19090/pexels-photo.jpg" },
+      // Shoes (your real images)
+      { id: 5, name: "Premium Leather Shoe 1", category: "shoes", price: 280000, image: "IMG-20261031-WA0010.jpg" },
+      { id: 6, name: "Premium Leather Shoe 2", category: "shoes", price: 295000, image: "IMG-20261031-WA0011.jpg" },
+      { id: 7, name: "Premium Leather Shoe 3", category: "shoes", price: 310000, image: "IMG-20261031-WA0012.jpg" },
+      { id: 8, name: "Premium Leather Shoe 4", category: "shoes", price: 275000, image: "IMG-20261031-WA0013.jpg" },
 
-      // Accessories
-      { id: 10, name: "Leather Belt", category: "accessories", price: 85000, image: "https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg" },
-      { id: 11, name: "Designer Watch", category: "accessories", price: 450000, image: "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg" },
-      { id: 12, name: "Sunglasses", category: "accessories", price: 120000, image: "https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg" }
+      // Bags (your real images)
+      { id: 9, name: "Classic Backpack", category: "bags", price: 185000, image: "IMG-20261029-WA0034.jpg" },
+      { id: 10, name: "Designer Backpack", category: "bags", price: 210000, image: "IMG-20261029-WA0109.jpg" },
+      { id: 11, name: "Urban Backpack", category: "bags", price: 195000, image: "IMG-20261029-WA0110.jpg" },
+      { id: 12, name: "Leather Style Bag", category: "bags", price: 225000, image: "IMG-20261029-WA0112.jpg" },
+      { id: 13, name: "Travel Backpack", category: "bags", price: 240000, image: "IMG-20261029-WA0113.jpg" },
+      { id: 14, name: "Casual Backpack", category: "bags", price: 175000, image: "IMG-20261029-WA0115.jpg" },
+      { id: 15, name: "Premium Backpack", category: "bags", price: 255000, image: "IMG-20261029-WA0116.jpg" },
+      { id: 16, name: "Stylish Backpack", category: "bags", price: 190000, image: "IMG-20261029-WA0117.jpg" },
+      { id: 17, name: "Modern Backpack", category: "bags", price: 205000, image: "IMG-20261029-WA0119.jpg" },
+      { id: 18, name: "Executive Bag", category: "bags", price: 265000, image: "IMG-20261029-WA0121.jpg" },
+      { id: 19, name: "City Backpack", category: "bags", price: 180000, image: "IMG-20261029-WA0122.jpg" },
+      { id: 20, name: "Luxury Backpack", category: "bags", price: 275000, image: "IMG-20261029-WA0124.jpg" },
+      { id: 21, name: "Everyday Backpack", category: "bags", price: 165000, image: "IMG-20261029-WA0125.jpg" }
     ];
 
     const FALLBACK_IMAGE = 'https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg';
