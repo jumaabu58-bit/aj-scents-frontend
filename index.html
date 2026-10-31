@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AJ Scents | Premium Perfumes</title>
+  <title>AJ Scents & More | Premium Lifestyle</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
     :root {
@@ -31,7 +31,7 @@
       border-bottom: 1px solid var(--gold);
     }
     .logo {
-      font-size: 1.7rem;
+      font-size: 1.6rem;
       font-weight: 700;
       color: var(--gold);
       letter-spacing: 1px;
@@ -59,7 +59,7 @@
       font-weight: bold;
     }
     .hero {
-      min-height: 75vh;
+      min-height: 70vh;
       background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), #111;
       display: flex;
       align-items: center;
@@ -68,13 +68,13 @@
       padding: 100px 20px 50px;
     }
     .hero h1 {
-      font-size: clamp(2.1rem, 7vw, 3.2rem);
+      font-size: clamp(2rem, 6.5vw, 3rem);
       color: var(--gold);
       margin-bottom: 12px;
     }
     .hero p {
       font-size: 1.05rem;
-      max-width: 480px;
+      max-width: 500px;
       margin: 0 auto 25px;
       opacity: 0.9;
     }
@@ -152,7 +152,7 @@
     }
     .product-card img {
       width: 100%;
-      height: 230px;
+      height: 240px;
       object-fit: cover;
       display: block;
       background: #2a2a2a;
@@ -359,7 +359,7 @@
 <body>
 
   <header>
-    <div class="logo">AJ SCENTS</div>
+    <div class="logo">AJ SCENTS & MORE</div>
     <div class="cart-icon" id="cart-icon">
       <i class="fas fa-shopping-bag"></i>
       <span class="cart-count" id="cart-count">0</span>
@@ -368,8 +368,8 @@
 
   <section class="hero">
     <div>
-      <h1>Discover Your Signature Scent</h1>
-      <p>Premium fragrances crafted for the bold, the elegant, and the unforgettable.</p>
+      <h1>Premium Lifestyle Collection</h1>
+      <p>Luxury perfumes, stylish shoes and exclusive accessories — all in one place.</p>
       <button class="btn" id="shop-now-btn">Shop Now</button>
     </div>
   </section>
@@ -378,10 +378,9 @@
     <h2>Our Collection</h2>
     <div class="filters">
       <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="floral">Floral</button>
-      <button class="filter-btn" data-filter="woody">Woody</button>
-      <button class="filter-btn" data-filter="fresh">Fresh</button>
-      <button class="filter-btn" data-filter="oriental">Oriental</button>
+      <button class="filter-btn" data-filter="perfume">Perfumes</button>
+      <button class="filter-btn" data-filter="shoes">Shoes</button>
+      <button class="filter-btn" data-filter="accessories">Accessories</button>
     </div>
     <div class="products" id="products"></div>
   </section>
@@ -435,27 +434,35 @@
     </div>
   </div>
 
-  <a href="https://wa.me/256705127282?text=Hello%20AJ%20Scents%2C%20I%20would%20like%20to%20inquire%20about%20your%20perfumes." 
+  <a href="https://wa.me/256705127282?text=Hello%20AJ%20Scents%2C%20I%20would%20like%20to%20inquire%20about%20your%20products." 
      class="whatsapp-btn" target="_blank" rel="noopener">
     <i class="fab fa-whatsapp"></i>
   </a>
 
   <footer>
-    <p>© 2026 AJ Scents • Kampala, Uganda</p>
-    <p style="margin-top:6px;">Premium Fragrances • Made for You</p>
+    <p>© 2026 AJ Scents & More • Kampala, Uganda</p>
+    <p style="margin-top:6px;">Premium Perfumes • Shoes • Accessories</p>
   </footer>
 
   <script>
-    // Products are now inside the website (no backend needed)
     const products = [
-      { id: 1, name: "Noir Elegance", category: "woody", price: 185000, image: "https://images.pexels.com/photos/12562773/pexels-photo-12562773.jpeg" },
-      { id: 2, name: "Rose Whisper", category: "floral", price: 165000, image: "https://images.pexels.com/photos/21067590/pexels-photo-21067590.jpeg" },
-      { id: 3, name: "Ocean Breeze", category: "fresh", price: 145000, image: "https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg" },
-      { id: 4, name: "Golden Oud", category: "oriental", price: 245000, image: "https://images.pexels.com/photos/1961795/pexels-photo-1961795.jpeg" },
-      { id: 5, name: "Vanilla Dream", category: "oriental", price: 155000, image: "https://images.pexels.com/photos/15096784/pexels-photo-15096784.jpeg" },
-      { id: 6, name: "Citrus Bloom", category: "fresh", price: 135000, image: "https://images.pexels.com/photos/15190739/pexels-photo-15190739.jpeg" },
-      { id: 7, name: "Jasmine Nights", category: "floral", price: 175000, image: "https://images.pexels.com/photos/21067590/pexels-photo-21067590.jpeg" },
-      { id: 8, name: "Sandalwood Soul", category: "woody", price: 195000, image: "https://images.pexels.com/photos/12562773/pexels-photo-12562773.jpeg" }
+      // Perfumes
+      { id: 1, name: "Noir Elegance", category: "perfume", price: 185000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
+      { id: 2, name: "Rose Whisper", category: "perfume", price: 165000, image: "https://images.pexels.com/photos/965990/pexels-photo-965990.jpeg" },
+      { id: 3, name: "Ocean Breeze", category: "perfume", price: 145000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
+      { id: 4, name: "Golden Oud", category: "perfume", price: 245000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
+      { id: 5, name: "Vanilla Dream", category: "perfume", price: 155000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
+
+      // Shoes
+      { id: 6, name: "Classic Leather Boots", category: "shoes", price: 320000, image: "https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg" },
+      { id: 7, name: "White Sneakers", category: "shoes", price: 210000, image: "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg" },
+      { id: 8, name: "Elegant Heels", category: "shoes", price: 280000, image: "https://images.pexels.com/photos/336372/pexels-photo-336372.jpeg" },
+      { id: 9, name: "Casual Loafers", category: "shoes", price: 195000, image: "https://images.pexels.com/photos/19090/pexels-photo.jpg" },
+
+      // Accessories
+      { id: 10, name: "Leather Belt", category: "accessories", price: 85000, image: "https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg" },
+      { id: 11, name: "Designer Watch", category: "accessories", price: 450000, image: "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg" },
+      { id: 12, name: "Sunglasses", category: "accessories", price: 120000, image: "https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg" }
     ];
 
     const FALLBACK_IMAGE = 'https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg';
@@ -603,8 +610,7 @@
         return;
       }
 
-      // Create WhatsApp message with order details
-      let message = `Hello AJ Scents,%0A%0A*New Order*%0A%0A`;
+      let message = `Hello AJ Scents & More,%0A%0A*New Order*%0A%0A`;
       message += `*Name:* ${name}%0A`;
       message += `*Phone:* ${phone}%0A`;
       message += `*Address:* ${address}%0A%0A`;
@@ -619,14 +625,11 @@
 
       message += `%0A*Total: UGX ${total.toLocaleString()}*%0A%0APlease confirm my order.`;
 
-      // Open WhatsApp
       window.open(`https://wa.me/256705127282?text=${message}`, '_blank');
 
-      // Show success
       document.getElementById('checkout-form-view').style.display = 'none';
       document.getElementById('success-message').style.display = 'block';
 
-      // Clear cart
       cart = [];
       updateCartCount();
     }
