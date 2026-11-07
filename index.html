@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AJ Scents & More | Premium Lifestyle</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <style>
     :root {
@@ -377,16 +376,15 @@
 
   <section class="section" id="shop-section">
     <h2>Our Collection</h2>
-  <div class="filters">
-  <button class="filter-btn active" data-filter="all">All</button>
-  <button class="filter-btn" data-filter="perfume">Perfumes</button>
-  <button class="filter-btn" data-filter="shoes">Shoes</button>
-  <button class="filter-btn" data-filter="bags">Bags</button>
-</div>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="perfume">Perfumes</button>
+      <button class="filter-btn" data-filter="shoes">Shoes</button>
+      <button class="filter-btn" data-filter="bags">Bags</button>
+    </div>
     <div class="products" id="products"></div>
   </section>
 
-  <!-- Cart -->
   <div class="overlay" id="overlay"></div>
   <div class="cart-sidebar" id="cart-sidebar">
     <div class="cart-header">
@@ -403,7 +401,6 @@
     </div>
   </div>
 
-  <!-- Checkout -->
   <div class="checkout-modal" id="checkout-modal">
     <div class="checkout-box">
       <div id="checkout-form-view">
@@ -446,89 +443,99 @@
   </footer>
 
   <script>
-  const BASE = "https://jumaabu58-bit.github.io/aj-scents-frontend/";
-
-const products = [
-  // Perfumes (temporary high-quality images)
-  { id: 1, name: "Noir Elegance", category: "perfume", price: 185000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
-  { id: 2, name: "Rose Whisper", category: "perfume", price: 165000, image: "https://images.pexels.com/photos/965990/pexels-photo-965990.jpeg" },
-  { id: 3, name: "Ocean Breeze", category: "perfume", price: 145000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
-  { id: 4, name: "Golden Oud", category: "perfume", price: 245000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
-
-  // Shoes (your original images)
-  { id: 5, name: "Premium Leather Shoe 1", category: "shoes", price: 280000, image: BASE + "IMG-20261031-WA0010.jpg" },
-  { id: 6, name: "Premium Leather Shoe 2", category: "shoes", price: 295000, image: BASE + "IMG-20261031-WA0011.jpg" },
-  { id: 7, name: "Premium Leather Shoe 3", category: "shoes", price: 310000, image: BASE + "IMG-20261031-WA0012.jpg" },
-  { id: 8, name: "Premium Leather Shoe 4", category: "shoes", price: 275000, image: BASE + "IMG-20261031-WA0013.jpg" },
-
-  // Bags (your original images)
-  { id: 9, name: "Classic Backpack", category: "bags", price: 185000, image: BASE + "IMG-20261029-WA0034.jpg" },
-  { id: 10, name: "Designer Backpack", category: "bags", price: 210000, image: BASE + "IMG-20261029-WA0109.jpg" },
-  { id: 11, name: "Urban Backpack", category: "bags", price: 195000, image: BASE + "IMG-20261029-WA0110.jpg" },
-  { id: 12, name: "Leather Style Bag", category: "bags", price: 225000, image: BASE + "IMG-20261029-WA0112.jpg" },
-  { id: 13, name: "Travel Backpack", category: "bags", price: 240000, image: BASE + "IMG-20261029-WA0113.jpg" },
-  { id: 14, name: "Casual Backpack", category: "bags", price: 175000, image: BASE + "IMG-20261029-WA0115.jpg" },
-  { id: 15, name: "Premium Backpack", category: "bags", price: 255000, image: BASE + "IMG-20261029-WA0116.jpg" },
-  { id: 16, name: "Stylish Backpack", category: "bags", price: 190000, image: BASE + "IMG-20261029-WA0117.jpg" },
-  { id: 17, name: "Modern Backpack", category: "bags", price: 205000, image: BASE + "IMG-20261029-WA0119.jpg" },
-  { id: 18, name: "Executive Bag", category: "bags", price: 265000, image: BASE + "IMG-20261029-WA0121.jpg" },
-  { id: 19, name: "City Backpack", category: "bags", price: 180000, image: BASE + "IMG-20261029-WA0122.jpg" },
-  { id: 20, name: "Luxury Backpack", category: "bags", price: 275000, image: BASE + "IMG-20261029-WA0124.jpg" },
-  { id: 21, name: "Everyday Backpack", category: "bags", price: 165000, image: BASE + "IMG-20261029-WA0125.jpg" }
-];
-
-    const FALLBACK_IMAGE = 'https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg';
+    const API_URL = "https://aj-scents-backend-simple-api.onrender.com/api/products";
+    const FALLBACK = "https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg";
+    let products = [];
     let cart = [];
 
+    function showLoading() {
+      document.getElementById("products").innerHTML = `
+        <div style="grid-column: 1/-1; text-align:center; padding:60px 20px; color:#888;">
+          <p>Loading products from server...</p>
+          <p style="font-size:0.9rem; margin-top:10px;">Please wait up to 30 seconds if the server was sleeping.</p>
+        </div>
+      `;
+    }
+
+    async function loadProducts() {
+      showLoading();
+      try {
+        const response = await fetch(API_URL);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          products = result.data.map(p => ({
+            id: p.id,
+            name: p.name,
+            category: p.category || "perfume",
+            price: p.price,
+            image: p.image || FALLBACK
+          }));
+        } else {
+          throw new Error("Invalid response");
+        }
+      } catch (error) {
+        console.error("Backend error:", error);
+        products = [
+          { id: 1, name: "Noir Elegance", category: "perfume", price: 185000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
+          { id: 2, name: "Rose Whisper", category: "perfume", price: 165000, image: "https://images.pexels.com/photos/965990/pexels-photo-965990.jpeg" },
+          { id: 3, name: "Ocean Breeze", category: "perfume", price: 145000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
+          { id: 4, name: "Golden Oud", category: "perfume", price: 245000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" }
+        ];
+      }
+      renderProducts(products);
+    }
+
     function renderProducts(list) {
-      const container = document.getElementById('products');
-      container.innerHTML = '';
+      const container = document.getElementById("products");
+      container.innerHTML = "";
+
+      if (list.length === 0) {
+        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px;">No products found</div>`;
+        return;
+      }
 
       list.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
+        const card = document.createElement("div");
+        card.className = "product-card";
         card.innerHTML = `
-          <img src="\( {p.image}" alt=" \){p.name}" loading="lazy" onerror="this.src='${FALLBACK_IMAGE}'">
+          <img src="\( {p.image}" alt=" \){p.name}" loading="lazy" onerror="this.src='${FALLBACK}'">
           <div class="product-info">
-            <h3>${p.name}</h3>
             <div class="category">${p.category}</div>
-            <div class="price">UGX ${p.price.toLocaleString()}</div>
+            <h3>${p.name}</h3>
+            <div class="price">UGX ${Number(p.price).toLocaleString()}</div>
             <button class="add-to-cart" data-id="${p.id}">Add to Cart</button>
           </div>
         `;
         container.appendChild(card);
       });
 
-      container.querySelectorAll('.add-to-cart').forEach(btn => {
-        btn.addEventListener('click', function() {
-          addToCart(parseInt(this.getAttribute('data-id')));
+      container.querySelectorAll(".add-to-cart").forEach(btn => {
+        btn.addEventListener("click", function () {
+          addToCart(parseInt(this.getAttribute("data-id")));
         });
       });
     }
 
     function filterProducts(cat) {
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.filter === cat);
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.filter === cat);
       });
-      if (cat === 'all') {
+      if (cat === "all") {
         renderProducts(products);
       } else {
-        renderProducts(products.filter(p => p.category === cat));
+        renderProducts(products.filter(p => p.category === cat || (cat === "perfume" && !["shoes","bags"].includes(p.category))));
       }
     }
 
     function addToCart(id) {
       const product = products.find(p => p.id === id);
       if (!product) return;
-
       const existing = cart.find(item => item.id === id);
-      if (existing) {
-        existing.quantity += 1;
-      } else {
-        cart.push({ ...product, quantity: 1 });
-      }
+      if (existing) existing.quantity += 1;
+      else cart.push({ ...product, quantity: 1 });
       updateCartCount();
-      alert(product.name + " added to cart!");
+      alert(product.name + " added to cart");
     }
 
     function removeFromCart(id) {
@@ -539,60 +546,55 @@ const products = [
 
     function updateCartCount() {
       const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-      document.getElementById('cart-count').textContent = count;
+      document.getElementById("cart-count").textContent = count;
     }
 
     function renderCartItems() {
-      const container = document.getElementById('cart-items');
+      const container = document.getElementById("cart-items");
       if (cart.length === 0) {
         container.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-        document.getElementById('cart-total').textContent = '0';
+        document.getElementById("cart-total").textContent = "0";
         return;
       }
-
       let total = 0;
-      container.innerHTML = '';
+      container.innerHTML = "";
       cart.forEach(item => {
         total += item.price * item.quantity;
-        const div = document.createElement('div');
-        div.className = 'cart-item';
+        const div = document.createElement("div");
+        div.className = "cart-item";
         div.innerHTML = `
-          <img src="\( {item.image}" alt=" \){item.name}" onerror="this.src='${FALLBACK_IMAGE}'">
+          <img src="\( {item.image}" alt=" \){item.name}" onerror="this.src='${FALLBACK}'">
           <div class="cart-item-info">
             <h4>${item.name}</h4>
-            <div>UGX ${item.price.toLocaleString()} × ${item.quantity}</div>
+            <div>UGX ${Number(item.price).toLocaleString()} × ${item.quantity}</div>
             <button class="remove-btn" data-id="${item.id}">Remove</button>
           </div>
         `;
         container.appendChild(div);
       });
-      document.getElementById('cart-total').textContent = total.toLocaleString();
-
-      container.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          removeFromCart(parseInt(this.getAttribute('data-id')));
+      document.getElementById("cart-total").textContent = total.toLocaleString();
+      container.querySelectorAll(".remove-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+          removeFromCart(parseInt(this.getAttribute("data-id")));
         });
       });
     }
 
     function openCart() {
       renderCartItems();
-      document.getElementById('cart-sidebar').classList.add('open');
-      document.getElementById('overlay').style.display = 'block';
+      document.getElementById("cart-sidebar").classList.add("open");
+      document.getElementById("overlay").style.display = "block";
     }
-
     function closeCart() {
-      document.getElementById('cart-sidebar').classList.remove('open');
-      document.getElementById('overlay').style.display = 'none';
+      document.getElementById("cart-sidebar").classList.remove("open");
+      document.getElementById("overlay").style.display = "none";
     }
-
     function openCheckout() {
       if (cart.length === 0) {
-        alert('Your cart is empty!');
+        alert("Your cart is empty");
         return;
       }
-
-      let summaryHTML = '';
+      let summaryHTML = "";
       let total = 0;
       cart.forEach(item => {
         const lineTotal = item.price * item.quantity;
@@ -600,72 +602,62 @@ const products = [
         summaryHTML += `<div><span>${item.name} × ${item.quantity}</span><span>UGX ${lineTotal.toLocaleString()}</span></div>`;
       });
       summaryHTML += `<div style="margin-top:10px; padding-top:10px; border-top:1px solid #333; font-weight:700;"><span>Total</span><span>UGX ${total.toLocaleString()}</span></div>`;
-
-      document.getElementById('order-summary').innerHTML = summaryHTML;
-      document.getElementById('checkout-form-view').style.display = 'block';
-      document.getElementById('success-message').style.display = 'none';
-      document.getElementById('checkout-modal').classList.add('open');
+      document.getElementById("order-summary").innerHTML = summaryHTML;
+      document.getElementById("checkout-form-view").style.display = "block";
+      document.getElementById("success-message").style.display = "none";
+      document.getElementById("checkout-modal").classList.add("open");
       closeCart();
     }
-
     function closeCheckout() {
-      document.getElementById('checkout-modal').classList.remove('open');
+      document.getElementById("checkout-modal").classList.remove("open");
     }
-
     function placeOrder() {
-      const name = document.getElementById('customer-name').value.trim();
-      const phone = document.getElementById('customer-phone').value.trim();
-      const address = document.getElementById('customer-address').value.trim();
-
+      const name = document.getElementById("customer-name").value.trim();
+      const phone = document.getElementById("customer-phone").value.trim();
+      const address = document.getElementById("customer-address").value.trim();
       if (!name || !phone || !address) {
-        alert('Please fill in Name, Phone and Address.');
+        alert("Please fill in Name, Phone and Address.");
         return;
       }
-
       let message = `Hello AJ Scents & More,%0A%0A*New Order*%0A%0A`;
       message += `*Name:* ${name}%0A`;
       message += `*Phone:* ${phone}%0A`;
       message += `*Address:* ${address}%0A%0A`;
       message += `*Items:*%0A`;
-
       let total = 0;
       cart.forEach(item => {
         const lineTotal = item.price * item.quantity;
         total += lineTotal;
         message += `- ${item.name} × ${item.quantity} = UGX ${lineTotal.toLocaleString()}%0A`;
       });
-
       message += `%0A*Total: UGX ${total.toLocaleString()}*%0A%0APlease confirm my order.`;
-
-      window.open(`https://wa.me/256705127282?text=${message}`, '_blank');
-
-      document.getElementById('checkout-form-view').style.display = 'none';
-      document.getElementById('success-message').style.display = 'block';
-
+      window.open(`https://wa.me/256705127282?text=${message}`, "_blank");
+      document.getElementById("checkout-form-view").style.display = "none";
+      document.getElementById("success-message").style.display = "block";
       cart = [];
       updateCartCount();
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      renderProducts(products);
+    document.addEventListener("DOMContentLoaded", function () {
+      loadProducts();
 
-      document.getElementById('shop-now-btn').addEventListener('click', () => {
-        document.getElementById('shop-section').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById("shop-now-btn").addEventListener("click", () => {
+        document.getElementById("shop-section").scrollIntoView({ behavior: "smooth" });
       });
 
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
           filterProducts(this.dataset.filter);
         });
       });
 
-      document.getElementById('cart-icon').addEventListener('click', openCart);
-      document.getElementById('close-cart').addEventListener('click', closeCart);
-      document.getElementById('overlay').addEventListener('click', closeCart);
-      document.getElementById('continue-btn').addEventListener('click', closeCart);
-      document.getElementById('checkout-btn').addEventListener('click', openCheckout);
-      document.getElementById('cancel-checkout-btn').addEventListener('click', closeCheckout);
-      document.getElementById('place-order-btn').addEventListener('click', placeOrder);
+      document.getElementById("cart-icon").addEventListener("click", openCart);
+      document.getElementById("close-cart").addEventListener("click", closeCart);
+      document.getElementById("overlay").addEventListener("click", closeCart);
+      document.getElementById("continue-btn").addEventListener("click", closeCart);
+      document.getElementById("checkout-btn").addEventListener("click", openCheckout);
+      document.getElementById("cancel-checkout-btn").addEventListener("click", closeCheckout);
+      document.getElementById("place-order-btn").addEventListener("click", placeOrder);
     });
   </script>
 </body>
