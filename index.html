@@ -449,12 +449,7 @@
     let cart = [];
 
     function showLoading() {
-      document.getElementById("products").innerHTML = `
-        <div style="grid-column: 1/-1; text-align:center; padding:60px 20px; color:#888;">
-          <p>Loading products from server...</p>
-          <p style="font-size:0.9rem; margin-top:10px;">Please wait up to 30 seconds if the server was sleeping.</p>
-        </div>
-      `;
+      document.getElementById("products").innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:60px 20px; color:#888;"><p>Loading products from server...</p><p style="font-size:0.9rem; margin-top:10px;">Please wait up to 30 seconds if the server was sleeping.</p></div>';
     }
 
     async function loadProducts() {
@@ -464,13 +459,15 @@
         const result = await response.json();
 
         if (result.success && result.data) {
-          products = result.data.map(p => ({
-            id: p.id,
-            name: p.name,
-            category: p.category || "perfume",
-            price: p.price,
-            image: p.image || FALLBACK
-          }));
+          products = result.data.map(function(p) {
+            return {
+              id: p.id,
+              name: p.name,
+              category: p.category || "perfume",
+              price: p.price,
+              image: p.image || FALLBACK
+            };
+          });
         } else {
           throw new Error("Invalid response");
         }
@@ -487,30 +484,29 @@
     }
 
     function renderProducts(list) {
-      const container = document.getElementById("products");
+      var container = document.getElementById("products");
       container.innerHTML = "";
 
       if (list.length === 0) {
-        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px;">No products found</div>`;
+        container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px;">No products found</div>';
         return;
       }
 
-      list.forEach(p => {
-        const card = document.createElement("div");
+      list.forEach(function(p) {
+        var card = document.createElement("div");
         card.className = "product-card";
-        card.innerHTML = `
-          <img src="\( {p.image}" alt=" \){p.name}" loading="lazy" onerror="this.src='${FALLBACK}'">
-          <div class="product-info">
-            <div class="category">${p.category}</div>
-            <h3>${p.name}</h3>
-            <div class="price">UGX ${Number(p.price).toLocaleString()}</div>
-            <button class="add-to-cart" data-id="${p.id}">Add to Cart</button>
-          </div>
-        `;
+        card.innerHTML = 
+          '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + FALLBACK + '\'">' +
+          '<div class="product-info">' +
+            '<div class="category">' + p.category + '</div>' +
+            '<h3>' + p.name + '</h3>' +
+            '<div class="price">UGX ' + Number(p.price).toLocaleString() + '</div>' +
+            '<button class="add-to-cart" data-id="' + p.id + '">Add to Cart</button>' +
+          '</div>';
         container.appendChild(card);
       });
 
-      container.querySelectorAll(".add-to-cart").forEach(btn => {
+      container.querySelectorAll(".add-to-cart").forEach(function(btn) {
         btn.addEventListener("click", function () {
           addToCart(parseInt(this.getAttribute("data-id")));
         });
@@ -518,62 +514,63 @@
     }
 
     function filterProducts(cat) {
-      document.querySelectorAll(".filter-btn").forEach(btn => {
+      document.querySelectorAll(".filter-btn").forEach(function(btn) {
         btn.classList.toggle("active", btn.dataset.filter === cat);
       });
       if (cat === "all") {
         renderProducts(products);
       } else {
-        renderProducts(products.filter(p => p.category === cat));
+        renderProducts(products.filter(function(p) {
+          return p.category === cat;
+        }));
       }
     }
 
     function addToCart(id) {
-      const product = products.find(p => p.id === id);
+      var product = products.find(function(p) { return p.id === id; });
       if (!product) return;
-      const existing = cart.find(item => item.id === id);
+      var existing = cart.find(function(item) { return item.id === id; });
       if (existing) existing.quantity += 1;
-      else cart.push({ ...product, quantity: 1 });
+      else cart.push({ id: product.id, name: product.name, category: product.category, price: product.price, image: product.image, quantity: 1 });
       updateCartCount();
       alert(product.name + " added to cart");
     }
 
     function removeFromCart(id) {
-      cart = cart.filter(item => item.id !== id);
+      cart = cart.filter(function(item) { return item.id !== id; });
       updateCartCount();
       renderCartItems();
     }
 
     function updateCartCount() {
-      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      var count = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
       document.getElementById("cart-count").textContent = count;
     }
 
     function renderCartItems() {
-      const container = document.getElementById("cart-items");
+      var container = document.getElementById("cart-items");
       if (cart.length === 0) {
         container.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
         document.getElementById("cart-total").textContent = "0";
         return;
       }
-      let total = 0;
+      var total = 0;
       container.innerHTML = "";
-      cart.forEach(item => {
+      cart.forEach(function(item) {
         total += item.price * item.quantity;
-        const div = document.createElement("div");
+        var div = document.createElement("div");
         div.className = "cart-item";
-        div.innerHTML = `
-          <img src="\( {item.image}" alt=" \){item.name}" onerror="this.src='${FALLBACK}'">
-          <div class="cart-item-info">
-            <h4>${item.name}</h4>
-            <div>UGX ${Number(item.price).toLocaleString()} × ${item.quantity}</div>
-            <button class="remove-btn" data-id="${item.id}">Remove</button>
-          </div>
-        `;
+        div.innerHTML = 
+          '<img src="' + item.image + '" alt="' + item.name + '" onerror="this.src=\'' + FALLBACK + '\'">' +
+          '<div class="cart-item-info">' +
+            '<h4>' + item.name + '</h4>' +
+            '<div>UGX ' + Number(item.price).toLocaleString() + ' × ' + item.quantity + '</div>' +
+            '<button class="remove-btn" data-id="' + item.id + '">Remove</button>' +
+          '</div>';
         container.appendChild(div);
       });
       document.getElementById("cart-total").textContent = total.toLocaleString();
-      container.querySelectorAll(".remove-btn").forEach(btn => {
+      container.querySelectorAll(".remove-btn").forEach(function(btn) {
         btn.addEventListener("click", function () {
           removeFromCart(parseInt(this.getAttribute("data-id")));
         });
@@ -594,14 +591,14 @@
         alert("Your cart is empty");
         return;
       }
-      let summaryHTML = "";
-      let total = 0;
-      cart.forEach(item => {
-        const lineTotal = item.price * item.quantity;
+      var summaryHTML = "";
+      var total = 0;
+      cart.forEach(function(item) {
+        var lineTotal = item.price * item.quantity;
         total += lineTotal;
-        summaryHTML += `<div><span>${item.name} × ${item.quantity}</span><span>UGX ${lineTotal.toLocaleString()}</span></div>`;
+        summaryHTML += '<div><span>' + item.name + ' × ' + item.quantity + '</span><span>UGX ' + lineTotal.toLocaleString() + '</span></div>';
       });
-      summaryHTML += `<div style="margin-top:10px; padding-top:10px; border-top:1px solid #333; font-weight:700;"><span>Total</span><span>UGX ${total.toLocaleString()}</span></div>`;
+      summaryHTML += '<div style="margin-top:10px; padding-top:10px; border-top:1px solid #333; font-weight:700;"><span>Total</span><span>UGX ' + total.toLocaleString() + '</span></div>';
       document.getElementById("order-summary").innerHTML = summaryHTML;
       document.getElementById("checkout-form-view").style.display = "block";
       document.getElementById("success-message").style.display = "none";
@@ -612,26 +609,26 @@
       document.getElementById("checkout-modal").classList.remove("open");
     }
     function placeOrder() {
-      const name = document.getElementById("customer-name").value.trim();
-      const phone = document.getElementById("customer-phone").value.trim();
-      const address = document.getElementById("customer-address").value.trim();
+      var name = document.getElementById("customer-name").value.trim();
+      var phone = document.getElementById("customer-phone").value.trim();
+      var address = document.getElementById("customer-address").value.trim();
       if (!name || !phone || !address) {
         alert("Please fill in Name, Phone and Address.");
         return;
       }
-      let message = `Hello AJ Scents & More,%0A%0A*New Order*%0A%0A`;
-      message += `*Name:* ${name}%0A`;
-      message += `*Phone:* ${phone}%0A`;
-      message += `*Address:* ${address}%0A%0A`;
-      message += `*Items:*%0A`;
-      let total = 0;
-      cart.forEach(item => {
-        const lineTotal = item.price * item.quantity;
+      var message = "Hello AJ Scents & More,%0A%0A*New Order*%0A%0A";
+      message += "*Name:* " + name + "%0A";
+      message += "*Phone:* " + phone + "%0A";
+      message += "*Address:* " + address + "%0A%0A";
+      message += "*Items:*%0A";
+      var total = 0;
+      cart.forEach(function(item) {
+        var lineTotal = item.price * item.quantity;
         total += lineTotal;
-        message += `- ${item.name} × ${item.quantity} = UGX ${lineTotal.toLocaleString()}%0A`;
+        message += "- " + item.name + " × " + item.quantity + " = UGX " + lineTotal.toLocaleString() + "%0A";
       });
-      message += `%0A*Total: UGX ${total.toLocaleString()}*%0A%0APlease confirm my order.`;
-      window.open(`https://wa.me/256705127282?text=${message}`, "_blank");
+      message += "%0A*Total: UGX " + total.toLocaleString() + "*%0A%0APlease confirm my order.";
+      window.open("https://wa.me/256705127282?text=" + message, "_blank");
       document.getElementById("checkout-form-view").style.display = "none";
       document.getElementById("success-message").style.display = "block";
       cart = [];
@@ -641,11 +638,11 @@
     document.addEventListener("DOMContentLoaded", function () {
       loadProducts();
 
-      document.getElementById("shop-now-btn").addEventListener("click", () => {
+      document.getElementById("shop-now-btn").addEventListener("click", function() {
         document.getElementById("shop-section").scrollIntoView({ behavior: "smooth" });
       });
 
-      document.querySelectorAll(".filter-btn").forEach(btn => {
+      document.querySelectorAll(".filter-btn").forEach(function(btn) {
         btn.addEventListener("click", function () {
           filterProducts(this.dataset.filter);
         });
