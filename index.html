@@ -444,43 +444,80 @@
 
   <script>
     const API_URL = "https://aj-scents-backend-simple-api.onrender.com/api/products";
-    const FALLBACK = "https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg";
-    let products = [];
+    const FALLBACK_IMG = "https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg";
+    const BASE = "https://jumaabu58-bit.github.io/aj-scents-frontend/";
+
+    // Full local products (used if backend is slow or offline)
+    const LOCAL_PRODUCTS = [
+      { id: 1, name: "Noir Elegance", category: "perfume", price: 185000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
+      { id: 2, name: "Rose Whisper", category: "perfume", price: 165000, image: "https://images.pexels.com/photos/965990/pexels-photo-965990.jpeg" },
+      { id: 3, name: "Ocean Breeze", category: "perfume", price: 145000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
+      { id: 4, name: "Golden Oud", category: "perfume", price: 245000, image: "https://images.pexels.com/photos/1961795/pexels-photo-1961795.jpeg" },
+      { id: 5, name: "Vanilla Dream", category: "perfume", price: 155000, image: "https://images.pexels.com/photos/15096784/pexels-photo-15096784.jpeg" },
+      { id: 6, name: "Citrus Bloom", category: "perfume", price: 135000, image: "https://images.pexels.com/photos/15190739/pexels-photo-15190739.jpeg" },
+      { id: 7, name: "Jasmine Nights", category: "perfume", price: 175000, image: "https://images.pexels.com/photos/3738339/pexels-photo-3738339.jpeg" },
+      { id: 8, name: "Sandalwood Soul", category: "perfume", price: 195000, image: "https://images.pexels.com/photos/12562773/pexels-photo-12562773.jpeg" },
+
+      { id: 9, name: "Premium Leather Shoe 1", category: "shoes", price: 280000, image: BASE + "IMG-20261031-WA0010.jpg" },
+      { id: 10, name: "Premium Leather Shoe 2", category: "shoes", price: 295000, image: BASE + "IMG-20261031-WA0011.jpg" },
+      { id: 11, name: "Premium Leather Shoe 3", category: "shoes", price: 310000, image: BASE + "IMG-20261031-WA0012.jpg" },
+      { id: 12, name: "Premium Leather Shoe 4", category: "shoes", price: 275000, image: BASE + "IMG-20261031-WA0013.jpg" },
+
+      { id: 13, name: "Classic Backpack", category: "bags", price: 185000, image: BASE + "IMG-20261029-WA0034.jpg" },
+      { id: 14, name: "Designer Backpack", category: "bags", price: 210000, image: BASE + "IMG-20261029-WA0109.jpg" },
+      { id: 15, name: "Urban Backpack", category: "bags", price: 195000, image: BASE + "IMG-20261029-WA0110.jpg" },
+      { id: 16, name: "Leather Style Bag", category: "bags", price: 225000, image: BASE + "IMG-20261029-WA0112.jpg" },
+      { id: 17, name: "Travel Backpack", category: "bags", price: 240000, image: BASE + "IMG-20261029-WA0113.jpg" },
+      { id: 18, name: "Casual Backpack", category: "bags", price: 175000, image: BASE + "IMG-20261029-WA0115.jpg" },
+      { id: 19, name: "Premium Backpack", category: "bags", price: 255000, image: BASE + "IMG-20261029-WA0116.jpg" },
+      { id: 20, name: "Stylish Backpack", category: "bags", price: 190000, image: BASE + "IMG-20261029-WA0117.jpg" },
+      { id: 21, name: "Modern Backpack", category: "bags", price: 205000, image: BASE + "IMG-20261029-WA0119.jpg" },
+      { id: 22, name: "Executive Bag", category: "bags", price: 265000, image: BASE + "IMG-20261029-WA0121.jpg" },
+      { id: 23, name: "City Backpack", category: "bags", price: 180000, image: BASE + "IMG-20261029-WA0122.jpg" },
+      { id: 24, name: "Luxury Backpack", category: "bags", price: 275000, image: BASE + "IMG-20261029-WA0124.jpg" },
+      { id: 25, name: "Everyday Backpack", category: "bags", price: 165000, image: BASE + "IMG-20261029-WA0125.jpg" }
+    ];
+
+    let products = LOCAL_PRODUCTS.slice();
     let cart = [];
 
     function showLoading() {
-      document.getElementById("products").innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:60px 20px; color:#888;"><p>Loading products from server...</p><p style="font-size:0.9rem; margin-top:10px;">Please wait up to 30 seconds if the server was sleeping.</p></div>';
+      document.getElementById("products").innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:60px 20px; color:#888;"><p>Loading products...</p><p style="font-size:0.9rem; margin-top:10px;">Please wait a few seconds</p></div>';
     }
 
     async function loadProducts() {
       showLoading();
-      try {
-        const response = await fetch(API_URL);
-        const result = await response.json();
 
-        if (result.success && result.data) {
+      // Show local products first so the page is never empty
+      products = LOCAL_PRODUCTS.slice();
+      renderProducts(products);
+
+      // Then try to get latest from backend
+      try {
+        var controller = new AbortController();
+        var timeout = setTimeout(function() { controller.abort(); }, 25000);
+
+        var response = await fetch(API_URL, { signal: controller.signal });
+        clearTimeout(timeout);
+
+        var result = await response.json();
+
+        if (result.success && result.data && result.data.length > 0) {
           products = result.data.map(function(p) {
             return {
               id: p.id,
               name: p.name,
               category: p.category || "perfume",
               price: p.price,
-              image: p.image || FALLBACK
+              image: p.image || FALLBACK_IMG
             };
           });
-        } else {
-          throw new Error("Invalid response");
+          renderProducts(products);
         }
       } catch (error) {
-        console.error("Backend error:", error);
-        products = [
-          { id: 1, name: "Noir Elegance", category: "perfume", price: 185000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
-          { id: 2, name: "Rose Whisper", category: "perfume", price: 165000, image: "https://images.pexels.com/photos/965990/pexels-photo-965990.jpeg" },
-          { id: 3, name: "Ocean Breeze", category: "perfume", price: 145000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
-          { id: 4, name: "Golden Oud", category: "perfume", price: 245000, image: "https://images.pexels.com/photos/1961795/pexels-photo-1961795.jpeg" }
-        ];
+        console.log("Using local products (backend slow or offline)");
+        // Keep LOCAL_PRODUCTS already showing
       }
-      renderProducts(products);
     }
 
     function renderProducts(list) {
@@ -496,7 +533,7 @@
         var card = document.createElement("div");
         card.className = "product-card";
         card.innerHTML = 
-          '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + FALLBACK + '\'">' +
+          '<img src="' + p.image + '" alt="' + p.name + '" loading="lazy" onerror="this.src=\'' + FALLBACK_IMG + '\'">' +
           '<div class="product-info">' +
             '<div class="category">' + p.category + '</div>' +
             '<h3>' + p.name + '</h3>' +
@@ -561,7 +598,7 @@
         var div = document.createElement("div");
         div.className = "cart-item";
         div.innerHTML = 
-          '<img src="' + item.image + '" alt="' + item.name + '" onerror="this.src=\'' + FALLBACK + '\'">' +
+          '<img src="' + item.image + '" alt="' + item.name + '" onerror="this.src=\'' + FALLBACK_IMG + '\'">' +
           '<div class="cart-item-info">' +
             '<h4>' + item.name + '</h4>' +
             '<div>UGX ' + Number(item.price).toLocaleString() + ' × ' + item.quantity + '</div>' +
