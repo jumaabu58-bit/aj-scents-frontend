@@ -108,9 +108,7 @@
       gap: 10px;
       margin-bottom: 10px;
     }
-    .section {
-      padding: 45px 4%;
-    }
+    .section { padding: 45px 4%; }
     h2 {
       text-align: center;
       font-size: 1.9rem;
@@ -156,9 +154,7 @@
       display: block;
       background: #2a2a2a;
     }
-    .product-info {
-      padding: 15px;
-    }
+    .product-info { padding: 15px; }
     .product-info h3 {
       color: var(--gold);
       font-size: 1.1rem;
@@ -435,7 +431,7 @@
     </div>
   </div>
 
-  <a href="https://wa.me/256705127282?text=Hello%20AJ%20Scents%20%26%20More%2C%20I%20would%20like%20to%20inquire%20about%20your%20products." 
+  <a href="https://wa.me/256705127282?text=Hello%20AJ%20Scents%20%26%20More%2C%20I%20would%20like%20to%20inquire%20about%20your%20products."
      class="whatsapp-btn" target="_blank" rel="noopener">
     <i class="fab fa-whatsapp"></i>
   </a>
@@ -490,7 +486,6 @@
       showLoading();
       products = LOCAL_PRODUCTS.slice();
       renderProducts(products);
-
       try {
         var controller = new AbortController();
         var timeout = setTimeout(function() { controller.abort(); }, 25000);
@@ -643,41 +638,56 @@
 
       var btn = document.getElementById("place-order-btn");
       btn.disabled = true;
-      btn.innerHTML = "<span>Processing payment...</span>";
+      btn.innerHTML = "<span>Waking server...</span>";
 
       try {
+        try { await fetch(API_BASE + "/", { method: "GET" }); } catch (e) {}
+        await new Promise(function(r) { setTimeout(r, 2000); });
+
+        btn.innerHTML = "<span>Creating order...</span>";
+
         var items = cart.map(function(item) {
           return { productId: item.id, quantity: item.quantity };
         });
 
-        var orderRes = await fetch(API_BASE + "/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: name,
-            phone: phone,
-            email: "customer@ajscents.com",
-            address: address,
-            items: items
-          })
-        });
-
-        var orderData = await orderRes.json();
-        if (!orderData.success) {
-          throw new Error(orderData.message || "Failed to create order");
+        var orderData = null;
+        for (var attempt = 1; attempt <= 2; attempt++) {
+          try {
+            var orderRes = await fetch(API_BASE + "/api/orders", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: name,
+                phone: phone,
+                email: "customer@ajscents.com",
+                address: address,
+                items: items
+              })
+            });
+            orderData = await orderRes.json();
+            break;
+          } catch (err) {
+            if (attempt === 2) throw err;
+            btn.innerHTML = "<span>Retrying...</span>";
+            await new Promise(function(r) { setTimeout(r, 3000); });
+          }
         }
 
-        var orderId = orderData.data.id;
+        if (!orderData || !orderData.success) {
+          throw new Error((orderData && orderData.message) || "Failed to create order");
+        }
+
+        btn.innerHTML = "<span>Starting Pesapal...</span>";
 
         var payRes = await fetch(API_BASE + "/api/payments/initialize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderId: orderId })
+          body: JSON.stringify({ orderId: orderData.data.id })
         });
 
         var payData = await payRes.json();
         if (!payData.success || !payData.data || !payData.data.paymentLink) {
-          throw new Error(payData.message || "Failed to start payment");
+          throw new Error((payData && payData.message) || "Failed to start payment");
         }
 
         cart = [];
@@ -686,7 +696,7 @@
 
       } catch (error) {
         console.error(error);
-        alert("Payment error: " + (error.message || "Unknown error") + "\n\nYou can still order via WhatsApp.");
+        alert("Payment error: " + (error.message || "Failed to fetch") + "\n\n1. Open backend link first\n2. Wait 10 seconds\n3. Try again\n\nOr use WhatsApp order.");
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-credit-card"></i><span>Pay with Pesapal</span>';
       }
@@ -721,17 +731,14 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       loadProducts();
-
       document.getElementById("shop-now-btn").addEventListener("click", function() {
         document.getElementById("shop-section").scrollIntoView({ behavior: "smooth" });
       });
-
       document.querySelectorAll(".filter-btn").forEach(function(btn) {
         btn.addEventListener("click", function () {
           filterProducts(this.dataset.filter);
         });
       });
-
       document.getElementById("cart-icon").addEventListener("click", openCart);
       document.getElementById("close-cart").addEventListener("click", closeCart);
       document.getElementById("overlay").addEventListener("click", closeCart);
