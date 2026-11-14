@@ -413,9 +413,9 @@
           <textarea id="customer-address" placeholder="Street, Area, City"></textarea>
         </div>
         <div class="order-summary" id="order-summary"></div>
-        <button class="btn-pay" id="place-order-btn" style="background:#1a73e8;">
+        <button class="btn-pay" id="place-order-btn" style="background:#635bff;">
           <i class="fas fa-credit-card"></i>
-          <span>Pay with Pesapal</span>
+          <span>Pay with Card (Stripe)</span>
         </button>
         <button class="btn-pay" id="whatsapp-order-btn" style="background:#25D366;">
           <i class="fab fa-whatsapp"></i>
@@ -627,7 +627,7 @@
       document.getElementById("checkout-modal").classList.remove("open");
     }
 
-    async function placeOrderPesapal() {
+    async function placeOrderStripe() {
       var name = document.getElementById("customer-name").value.trim();
       var phone = document.getElementById("customer-phone").value.trim();
       var address = document.getElementById("customer-address").value.trim();
@@ -677,9 +677,9 @@
           throw new Error((orderData && orderData.message) || "Failed to create order");
         }
 
-        btn.innerHTML = "<span>Starting Pesapal...</span>";
+        btn.innerHTML = "<span>Opening Stripe...</span>";
 
-        var payRes = await fetch(API_BASE + "/api/payments/initialize", {
+        var payRes = await fetch(API_BASE + "/api/payments/stripe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ orderId: orderData.data.id })
@@ -687,7 +687,7 @@
 
         var payData = await payRes.json();
         if (!payData.success || !payData.data || !payData.data.paymentLink) {
-          throw new Error((payData && payData.message) || "Failed to start payment");
+          throw new Error((payData && payData.message) || "Failed to start Stripe payment");
         }
 
         cart = [];
@@ -698,7 +698,7 @@
         console.error(error);
         alert("Payment error: " + (error.message || "Failed to fetch") + "\n\n1. Open backend link first\n2. Wait 10 seconds\n3. Try again\n\nOr use WhatsApp order.");
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-credit-card"></i><span>Pay with Pesapal</span>';
+        btn.innerHTML = '<i class="fas fa-credit-card"></i><span>Pay with Card (Stripe)</span>';
       }
     }
 
@@ -731,6 +731,16 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       loadProducts();
+
+      // Show success message if returned from Stripe
+      var params = new URLSearchParams(window.location.search);
+      if (params.get("payment") === "success") {
+        alert("Payment successful! Order: " + (params.get("order") || ""));
+      }
+      if (params.get("payment") === "cancelled") {
+        alert("Payment was cancelled.");
+      }
+
       document.getElementById("shop-now-btn").addEventListener("click", function() {
         document.getElementById("shop-section").scrollIntoView({ behavior: "smooth" });
       });
@@ -745,7 +755,7 @@
       document.getElementById("continue-btn").addEventListener("click", closeCart);
       document.getElementById("checkout-btn").addEventListener("click", openCheckout);
       document.getElementById("cancel-checkout-btn").addEventListener("click", closeCheckout);
-      document.getElementById("place-order-btn").addEventListener("click", placeOrderPesapal);
+      document.getElementById("place-order-btn").addEventListener("click", placeOrderStripe);
       document.getElementById("whatsapp-order-btn").addEventListener("click", placeOrderWhatsApp);
     });
   </script>
