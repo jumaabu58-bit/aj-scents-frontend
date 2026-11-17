@@ -443,77 +443,140 @@
 
   <script>
     const API_BASE = "https://aj-scents-backend-simple-api.onrender.com";
-    const API_URL = API_BASE + "/api/products";
+    const SHEET_CSV = "https://docs.google.com/spreadsheets/d/1wQVYVhrrL0S0QHQTxndJ9Hc6YHLf9ZGuHq68x2D91Tg/export?format=csv&gid=0";
     const FALLBACK_IMG = "https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg";
     const BASE = "https://jumaabu58-bit.github.io/aj-scents-frontend/";
 
     const LOCAL_PRODUCTS = [
-      { id: 1, name: "Test Payment Item", category: "perfume", price: 1000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
-      { id: 2, name: "Rose Whisper", category: "perfume", price: 165000, image: "https://images.pexels.com/photos/965990/pexels-photo-965990.jpeg" },
-      { id: 3, name: "Ocean Breeze", category: "perfume", price: 145000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
-      { id: 4, name: "Golden Oud", category: "perfume", price: 245000, image: "https://images.pexels.com/photos/1961795/pexels-photo-1961795.jpeg" },
-      { id: 5, name: "Vanilla Dream", category: "perfume", price: 155000, image: "https://images.pexels.com/photos/15096784/pexels-photo-15096784.jpeg" },
-      { id: 6, name: "Citrus Bloom", category: "perfume", price: 135000, image: "https://images.pexels.com/photos/15190739/pexels-photo-15190739.jpeg" },
-      { id: 7, name: "Jasmine Nights", category: "perfume", price: 175000, image: "https://images.pexels.com/photos/3738339/pexels-photo-3738339.jpeg" },
-      { id: 8, name: "Sandalwood Soul", category: "perfume", price: 195000, image: "https://images.pexels.com/photos/12562773/pexels-photo-12562773.jpeg" },
+      { id: 1, name: "Rose Whisper", category: "perfume", price: 165000, image: "https://images.pexels.com/photos/965990/pexels-photo-965990.jpeg" },
+      { id: 2, name: "Ocean Breeze", category: "perfume", price: 145000, image: "https://images.pexels.com/photos/258244/pexels-photo-258244.jpeg" },
+      { id: 3, name: "Golden Oud", category: "perfume", price: 245000, image: "https://images.pexels.com/photos/1961795/pexels-photo-1961795.jpeg" },
       { id: 9, name: "Premium Leather Shoe 1", category: "shoes", price: 280000, image: BASE + "IMG-20261031-WA0010.jpg" },
-      { id: 10, name: "Premium Leather Shoe 2", category: "shoes", price: 295000, image: BASE + "IMG-20261031-WA0011.jpg" },
-      { id: 11, name: "Premium Leather Shoe 3", category: "shoes", price: 310000, image: BASE + "IMG-20261031-WA0012.jpg" },
-      { id: 12, name: "Premium Leather Shoe 4", category: "shoes", price: 275000, image: BASE + "IMG-20261031-WA0013.jpg" },
-      { id: 13, name: "Classic Backpack", category: "bags", price: 185000, image: BASE + "IMG-20261029-WA0034.jpg" },
-      { id: 14, name: "Designer Backpack", category: "bags", price: 210000, image: BASE + "IMG-20261029-WA0109.jpg" },
-      { id: 15, name: "Urban Backpack", category: "bags", price: 195000, image: BASE + "IMG-20261029-WA0110.jpg" },
-      { id: 16, name: "Leather Style Bag", category: "bags", price: 225000, image: BASE + "IMG-20261029-WA0112.jpg" },
-      { id: 17, name: "Travel Backpack", category: "bags", price: 240000, image: BASE + "IMG-20261029-WA0113.jpg" },
-      { id: 18, name: "Casual Backpack", category: "bags", price: 175000, image: BASE + "IMG-20261029-WA0115.jpg" },
-      { id: 19, name: "Premium Backpack", category: "bags", price: 255000, image: BASE + "IMG-20261029-WA0116.jpg" },
-      { id: 20, name: "Stylish Backpack", category: "bags", price: 190000, image: BASE + "IMG-20261029-WA0117.jpg" },
-      { id: 21, name: "Modern Backpack", category: "bags", price: 205000, image: BASE + "IMG-20261029-WA0119.jpg" },
-      { id: 22, name: "Executive Bag", category: "bags", price: 265000, image: BASE + "IMG-20261029-WA0121.jpg" },
-      { id: 23, name: "City Backpack", category: "bags", price: 180000, image: BASE + "IMG-20261029-WA0122.jpg" },
-      { id: 24, name: "Luxury Backpack", category: "bags", price: 275000, image: BASE + "IMG-20261029-WA0124.jpg" },
-      { id: 25, name: "Everyday Backpack", category: "bags", price: 165000, image: BASE + "IMG-20261029-WA0125.jpg" }
+      { id: 13, name: "Classic Backpack", category: "bags", price: 185000, image: BASE + "IMG-20261029-WA0034.jpg" }
     ];
 
     let products = LOCAL_PRODUCTS.slice();
     let cart = [];
 
-    function showLoading() {
-      document.getElementById("products").innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:60px 20px; color:#888;"><p>Loading products...</p></div>';
+    function parseCSV(text) {
+      var rows = [];
+      var lines = text.replace(/\r/g, "").split("\n").filter(function(l) { return l.trim().length; });
+      lines.forEach(function(line) {
+        var cols = [];
+        var cur = "";
+        var inQuotes = false;
+        for (var i = 0; i < line.length; i++) {
+          var ch = line[i];
+          if (ch === '"') inQuotes = !inQuotes;
+          else if (ch === ',' && !inQuotes) { cols.push(cur.trim()); cur = ""; }
+          else cur += ch;
+        }
+        cols.push(cur.trim());
+        rows.push(cols);
+      });
+      return rows;
+    }
+
+    function normalizeCategory(cat) {
+      cat = (cat || "").toLowerCase().trim();
+      if (cat.indexOf("shoe") >= 0) return "shoes";
+      if (cat.indexOf("bag") >= 0) return "bags";
+      if (cat.indexOf("perfume") >= 0 || cat.indexOf("scent") >= 0) return "perfume";
+      return cat || "perfume";
+    }
+
+    function normalizeImage(img) {
+      img = (img || "").trim();
+      if (!img) return FALLBACK_IMG;
+      if (img.indexOf("http://") === 0 || img.indexOf("https://") === 0) return img;
+      // filename only -> assume uploaded to GitHub Pages frontend
+      return BASE + img.replace(/^\//, "");
+    }
+
+    function productsFromSheet(csvText) {
+      var rows = parseCSV(csvText);
+      if (rows.length < 2) return [];
+      var headers = rows[0].map(function(h) { return h.toLowerCase().trim(); });
+
+      function col(names) {
+        for (var i = 0; i < names.length; i++) {
+          var idx = headers.indexOf(names[i]);
+          if (idx >= 0) return idx;
+        }
+        return -1;
+      }
+
+      var iId = col(["id"]);
+      var iName = col(["name", "product", "title"]);
+      var iCat = col(["category", "type"]);
+      var iPrice = col(["price", "amount", "cost"]);
+      var iImage = col(["image", "img", "photo", "picture", "url"]);
+
+      if (iName < 0 || iPrice < 0) return [];
+
+      var list = [];
+      for (var r = 1; r < rows.length; r++) {
+        var row = rows[r];
+        var name = (row[iName] || "").trim();
+        if (!name) continue;
+        var price = parseInt(String(row[iPrice] || "0").replace(/[^0-9]/g, ""), 10) || 0;
+        var id = iId >= 0 ? (parseInt(row[iId], 10) || r) : r;
+        list.push({
+          id: id,
+          name: name,
+          category: normalizeCategory(iCat >= 0 ? row[iCat] : "perfume"),
+          price: price,
+          image: normalizeImage(iImage >= 0 ? row[iImage] : "")
+        });
+      }
+      return list;
     }
 
     async function loadProducts() {
-      showLoading();
+      document.getElementById("products").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#888;">Loading products...</div>';
       products = LOCAL_PRODUCTS.slice();
       renderProducts(products);
+
+      // 1) Google Sheet first (your admin)
       try {
-        var controller = new AbortController();
-        var timeout = setTimeout(function() { controller.abort(); }, 25000);
-        var response = await fetch(API_URL, { signal: controller.signal });
-        clearTimeout(timeout);
-        var result = await response.json();
-        if (result.success && result.data && result.data.length > 0) {
+        var sheetRes = await fetch(SHEET_CSV + "&t=" + Date.now());
+        var csv = await sheetRes.text();
+        var sheetProducts = productsFromSheet(csv);
+        if (sheetProducts.length > 0) {
+          products = sheetProducts;
+          renderProducts(products);
+          return;
+        }
+      } catch (e) {
+        console.log("Sheet load failed", e);
+      }
+
+      // 2) Backend fallback
+      try {
+        var res = await fetch(API_BASE + "/api/products");
+        var result = await res.json();
+        if (result.success && result.data && result.data.length) {
           products = result.data.map(function(p) {
             return {
               id: p.id,
               name: p.name,
-              category: p.category || "perfume",
+              category: normalizeCategory(p.category),
               price: p.price,
-              image: p.image || FALLBACK_IMG
+              image: normalizeImage(p.image)
             };
           });
           renderProducts(products);
         }
-      } catch (error) {
-        console.log("Using local products");
+      } catch (e2) {
+        console.log("Backend load failed");
       }
     }
 
     function renderProducts(list) {
       var container = document.getElementById("products");
       container.innerHTML = "";
-      if (list.length === 0) {
-        container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px;">No products found</div>';
+      if (!list.length) {
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;">No products found. Update your Google Sheet.</div>';
         return;
       }
       list.forEach(function(p) {
@@ -530,7 +593,7 @@
         container.appendChild(card);
       });
       container.querySelectorAll(".add-to-cart").forEach(function(btn) {
-        btn.addEventListener("click", function () {
+        btn.addEventListener("click", function() {
           addToCart(parseInt(this.getAttribute("data-id")));
         });
       });
@@ -567,7 +630,7 @@
 
     function renderCartItems() {
       var container = document.getElementById("cart-items");
-      if (cart.length === 0) {
+      if (!cart.length) {
         container.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
         document.getElementById("cart-total").textContent = "0";
         return;
@@ -589,7 +652,7 @@
       });
       document.getElementById("cart-total").textContent = total.toLocaleString();
       container.querySelectorAll(".remove-btn").forEach(function(btn) {
-        btn.addEventListener("click", function () {
+        btn.addEventListener("click", function() {
           removeFromCart(parseInt(this.getAttribute("data-id")));
         });
       });
@@ -605,10 +668,7 @@
       document.getElementById("overlay").style.display = "none";
     }
     function openCheckout() {
-      if (cart.length === 0) {
-        alert("Your cart is empty");
-        return;
-      }
+      if (!cart.length) { alert("Your cart is empty"); return; }
       var summaryHTML = "";
       var total = 0;
       cart.forEach(function(item) {
@@ -616,7 +676,7 @@
         total += lineTotal;
         summaryHTML += '<div><span>' + item.name + ' × ' + item.quantity + '</span><span>UGX ' + lineTotal.toLocaleString() + '</span></div>';
       });
-      summaryHTML += '<div style="margin-top:10px; padding-top:10px; border-top:1px solid #333; font-weight:700;"><span>Total</span><span>UGX ' + total.toLocaleString() + '</span></div>';
+      summaryHTML += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #333;font-weight:700;"><span>Total</span><span>UGX ' + total.toLocaleString() + '</span></div>';
       document.getElementById("order-summary").innerHTML = summaryHTML;
       document.getElementById("checkout-form-view").style.display = "block";
       document.getElementById("success-message").style.display = "none";
@@ -635,34 +695,21 @@
         alert("Please fill in Name, Phone and Address.");
         return;
       }
-
       var btn = document.getElementById("place-order-btn");
       btn.disabled = true;
       btn.innerHTML = "<span>Waking server...</span>";
-
       try {
-        try { await fetch(API_BASE + "/", { method: "GET" }); } catch (e) {}
+        try { await fetch(API_BASE + "/"); } catch (e) {}
         await new Promise(function(r) { setTimeout(r, 2000); });
-
         btn.innerHTML = "<span>Creating order...</span>";
-
-        var items = cart.map(function(item) {
-          return { productId: item.id, quantity: item.quantity };
-        });
-
+        var items = cart.map(function(item) { return { productId: item.id, quantity: item.quantity }; });
         var orderData = null;
         for (var attempt = 1; attempt <= 2; attempt++) {
           try {
             var orderRes = await fetch(API_BASE + "/api/orders", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: name,
-                phone: phone,
-                email: "customer@ajscents.com",
-                address: address,
-                items: items
-              })
+              body: JSON.stringify({ name: name, phone: phone, email: "customer@ajscents.com", address: address, items: items })
             });
             orderData = await orderRes.json();
             break;
@@ -672,31 +719,22 @@
             await new Promise(function(r) { setTimeout(r, 3000); });
           }
         }
-
-        if (!orderData || !orderData.success) {
-          throw new Error((orderData && orderData.message) || "Failed to create order");
-        }
-
+        if (!orderData || !orderData.success) throw new Error((orderData && orderData.message) || "Failed to create order");
         btn.innerHTML = "<span>Opening Stripe...</span>";
-
         var payRes = await fetch(API_BASE + "/api/payments/stripe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ orderId: orderData.data.id })
         });
-
         var payData = await payRes.json();
         if (!payData.success || !payData.data || !payData.data.paymentLink) {
           throw new Error((payData && payData.message) || "Failed to start Stripe payment");
         }
-
         cart = [];
         updateCartCount();
         window.location.href = payData.data.paymentLink;
-
       } catch (error) {
-        console.error(error);
-        alert("Payment error: " + (error.message || "Failed to fetch") + "\n\n1. Open backend link first\n2. Wait 10 seconds\n3. Try again\n\nOr use WhatsApp order.");
+        alert("Payment error: " + (error.message || "Failed to fetch") + "\n\nUse WhatsApp order, or wake backend first.");
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-credit-card"></i><span>Pay with Card (Stripe)</span>';
       }
@@ -711,10 +749,7 @@
         return;
       }
       var message = "Hello AJ Scents & More,%0A%0A*New Order*%0A%0A";
-      message += "*Name:* " + name + "%0A";
-      message += "*Phone:* " + phone + "%0A";
-      message += "*Address:* " + address + "%0A%0A";
-      message += "*Items:*%0A";
+      message += "*Name:* " + name + "%0A*Phone:* " + phone + "%0A*Address:* " + address + "%0A%0A*Items:*%0A";
       var total = 0;
       cart.forEach(function(item) {
         var lineTotal = item.price * item.quantity;
@@ -729,25 +764,17 @@
       updateCartCount();
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
       loadProducts();
-
-      // Show success message if returned from Stripe
       var params = new URLSearchParams(window.location.search);
-      if (params.get("payment") === "success") {
-        alert("Payment successful! Order: " + (params.get("order") || ""));
-      }
-      if (params.get("payment") === "cancelled") {
-        alert("Payment was cancelled.");
-      }
+      if (params.get("payment") === "success") alert("Payment successful! Order: " + (params.get("order") || ""));
+      if (params.get("payment") === "cancelled") alert("Payment was cancelled.");
 
       document.getElementById("shop-now-btn").addEventListener("click", function() {
         document.getElementById("shop-section").scrollIntoView({ behavior: "smooth" });
       });
       document.querySelectorAll(".filter-btn").forEach(function(btn) {
-        btn.addEventListener("click", function () {
-          filterProducts(this.dataset.filter);
-        });
+        btn.addEventListener("click", function() { filterProducts(this.dataset.filter); });
       });
       document.getElementById("cart-icon").addEventListener("click", openCart);
       document.getElementById("close-cart").addEventListener("click", closeCart);
