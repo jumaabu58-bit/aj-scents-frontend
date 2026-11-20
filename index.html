@@ -426,7 +426,7 @@
       <div class="success-message" id="success-message">
         <i class="fas fa-check-circle"></i>
         <h2 style="color:#4ade80;">Order Ready!</h2>
-        <p style="margin:12px 0;">We will contact you on WhatsApp shortly.</p>
+        <p style="margin:12px 0;">WhatsApp opened with your full order details.</p>
       </div>
     </div>
   </div>
@@ -561,7 +561,6 @@
         usedNames[p.name.toLowerCase()] = true;
       });
 
-      // Google Sheet products
       try {
         var sheetRes = await fetch(SHEET_CSV + "&t=" + Date.now());
         var csv = await sheetRes.text();
@@ -577,7 +576,6 @@
         console.log("Sheet load failed", e);
       }
 
-      // Backend products
       try {
         var res = await fetch(API_BASE + "/api/products");
         var result = await res.json();
@@ -782,16 +780,38 @@
         alert("Please fill in Name, Phone and Address.");
         return;
       }
-      var message = "Hello AJ Scents & More,%0A%0A*New Order*%0A%0A";
-      message += "*Name:* " + name + "%0A*Phone:* " + phone + "%0A*Address:* " + address + "%0A%0A*Items:*%0A";
+      if (!cart.length) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      var lines = [];
+      lines.push("Hello AJ Scents & More,");
+      lines.push("");
+      lines.push("*New Order*");
+      lines.push("");
+      lines.push("*Name:* " + name);
+      lines.push("*Phone:* " + phone);
+      lines.push("*Address:* " + address);
+      lines.push("");
+      lines.push("*Items:*");
+
       var total = 0;
       cart.forEach(function(item) {
         var lineTotal = item.price * item.quantity;
         total += lineTotal;
-        message += "- " + item.name + " × " + item.quantity + " = UGX " + lineTotal.toLocaleString() + "%0A";
+        lines.push("- " + item.name + " x " + item.quantity + " = UGX " + Number(lineTotal).toLocaleString());
       });
-      message += "%0A*Total: UGX " + total.toLocaleString() + "*%0A%0APlease confirm my order.";
-      window.open("https://wa.me/256705127282?text=" + message, "_blank");
+
+      lines.push("");
+      lines.push("*Total: UGX " + Number(total).toLocaleString() + "*");
+      lines.push("");
+      lines.push("Please confirm my order.");
+
+      var text = lines.join("\n");
+      var url = "https://wa.me/256705127282?text=" + encodeURIComponent(text);
+      window.open(url, "_blank");
+
       document.getElementById("checkout-form-view").style.display = "none";
       document.getElementById("success-message").style.display = "block";
       cart = [];
