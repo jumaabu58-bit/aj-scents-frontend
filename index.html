@@ -364,7 +364,7 @@
   <section class="hero">
     <div>
       <h1>Premium Lifestyle Collection</h1>
-      <p>Luxury perfumes, stylish shoes and exclusive bags — all in one place.</p>
+      <p>Perfumes, shoes, bags, clothes and watches — all in one place.</p>
       <button class="btn" id="shop-now-btn">Shop Now</button>
     </div>
   </section>
@@ -376,6 +376,11 @@
       <button class="filter-btn" data-filter="perfume">Perfumes</button>
       <button class="filter-btn" data-filter="shoes">Shoes</button>
       <button class="filter-btn" data-filter="bags">Bags</button>
+      <button class="filter-btn" data-filter="trousers">Trousers</button>
+      <button class="filter-btn" data-filter="shirts">Shirts</button>
+      <button class="filter-btn" data-filter="tshirts">T-Shirts</button>
+      <button class="filter-btn" data-filter="shorts">Shorts</button>
+      <button class="filter-btn" data-filter="watches">Watches</button>
     </div>
     <div class="products" id="products"></div>
   </section>
@@ -438,7 +443,7 @@
 
   <footer>
     <p>© 2026 AJ Scents & More • Kampala, Uganda</p>
-    <p style="margin-top:6px;">Premium Perfumes • Shoes • Bags</p>
+    <p style="margin-top:6px;">Perfumes • Shoes • Bags • Clothes • Watches</p>
   </footer>
 
   <script>
@@ -502,6 +507,11 @@
       if (cat.indexOf("shoe") >= 0) return "shoes";
       if (cat.indexOf("bag") >= 0) return "bags";
       if (cat.indexOf("perfume") >= 0 || cat.indexOf("scent") >= 0) return "perfume";
+      if (cat.indexOf("trouser") >= 0 || cat.indexOf("pant") >= 0) return "trousers";
+      if (cat.indexOf("tshirt") >= 0 || cat.indexOf("t-shirt") >= 0 || cat.indexOf("t shirt") >= 0) return "tshirts";
+      if (cat.indexOf("shirt") >= 0) return "shirts";
+      if (cat.indexOf("short") >= 0) return "shorts";
+      if (cat.indexOf("watch") >= 0) return "watches";
       return cat || "perfume";
     }
 
@@ -608,7 +618,7 @@
       var container = document.getElementById("products");
       container.innerHTML = "";
       if (!list.length) {
-        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;">No products found</div>';
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;">No products in this category yet</div>';
         return;
       }
       list.forEach(function(p) {
