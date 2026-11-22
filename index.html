@@ -215,13 +215,8 @@
       font-size: 0.98rem;
       margin-bottom: 8px;
     }
-    .info-card ul {
-      padding-left: 18px;
-    }
-    .info-card a {
-      color: var(--gold);
-      text-decoration: none;
-    }
+    .info-card ul { padding-left: 18px; }
+    .info-card a { color: var(--gold); text-decoration: none; }
     .overlay {
       position: fixed;
       inset: 0;
@@ -331,7 +326,8 @@
       opacity: 0.9;
     }
     .form-group input,
-    .form-group textarea {
+    .form-group textarea,
+    .form-group select {
       width: 100%;
       padding: 12px 14px;
       border-radius: 8px;
@@ -343,6 +339,20 @@
     .form-group textarea {
       resize: vertical;
       min-height: 70px;
+    }
+    .form-hint {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 4px;
+    }
+    .checkout-note {
+      background: #141414;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.88rem;
+      color: #bbb;
+      margin-bottom: 14px;
     }
     .order-summary {
       background: #111;
@@ -358,13 +368,23 @@
     }
     .success-message {
       text-align: center;
-      padding: 30px 10px;
+      padding: 20px 10px;
       display: none;
     }
     .success-message i {
-      font-size: 3.5rem;
+      font-size: 3.2rem;
       color: #4ade80;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
+    }
+    .success-summary {
+      text-align: left;
+      background: #111;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 16px 0;
+      font-size: 0.92rem;
+      white-space: pre-wrap;
+      color: #ddd;
     }
     .whatsapp-btn {
       position: fixed;
@@ -475,14 +495,8 @@
     <div class="info-grid">
       <div class="info-card">
         <h3>Who we are</h3>
-        <p>
-          AJ Scents & More is a Kampala-based lifestyle shop offering premium perfumes,
-          shoes, bags, clothes and watches.
-        </p>
-        <p>
-          We focus on quality products, fair prices, and fast communication on WhatsApp
-          so ordering stays simple.
-        </p>
+        <p>AJ Scents & More is a Kampala-based lifestyle shop offering premium perfumes, shoes, bags, clothes and watches.</p>
+        <p>We focus on quality products, fair prices, and fast communication on WhatsApp so ordering stays simple.</p>
       </div>
       <div class="info-card">
         <h3>Why shop with us</h3>
@@ -537,19 +551,39 @@
     <div class="checkout-box">
       <div id="checkout-form-view">
         <h2>Checkout</h2>
+
+        <div class="checkout-note">
+          Delivery fee is confirmed on WhatsApp based on your area. Please include size/colour for clothes and shoes.
+        </div>
+
         <div class="form-group">
-          <label>Full Name</label>
+          <label>Full Name *</label>
           <input type="text" id="customer-name" placeholder="Enter your full name">
         </div>
         <div class="form-group">
-          <label>Phone Number</label>
+          <label>Phone Number *</label>
           <input type="tel" id="customer-phone" placeholder="e.g. 07XXXXXXXX">
         </div>
         <div class="form-group">
-          <label>Delivery Address</label>
+          <label>Delivery Address *</label>
           <textarea id="customer-address" placeholder="Street, Area, City"></textarea>
         </div>
+        <div class="form-group">
+          <label>Size (optional)</label>
+          <input type="text" id="customer-size" placeholder="e.g. 42, M, L, 32 waist">
+          <div class="form-hint">For shoes, trousers, shirts, t-shirts, shorts</div>
+        </div>
+        <div class="form-group">
+          <label>Colour (optional)</label>
+          <input type="text" id="customer-color" placeholder="e.g. black, blue, brown">
+        </div>
+        <div class="form-group">
+          <label>Notes (optional)</label>
+          <textarea id="customer-notes" placeholder="Any extra details for your order"></textarea>
+        </div>
+
         <div class="order-summary" id="order-summary"></div>
+
         <button class="btn-pay" id="place-order-btn" style="background:#635bff;">
           <i class="fas fa-credit-card"></i>
           <span>Pay with Card (Stripe)</span>
@@ -560,10 +594,22 @@
         </button>
         <button class="btn btn-outline" style="width:100%;" id="cancel-checkout-btn">Cancel</button>
       </div>
+
       <div class="success-message" id="success-message">
         <i class="fas fa-check-circle"></i>
-        <h2 style="color:#4ade80;">Order Ready!</h2>
-        <p style="margin:12px 0;">WhatsApp opened with your full order details.</p>
+        <h2 style="color:#4ade80; margin-bottom:8px;">Order ready!</h2>
+        <p>WhatsApp should open with your full order.</p>
+        <p style="margin-top:8px; font-size:0.9rem; color:#aaa;">If it didn’t open, copy the order below and send it manually.</p>
+        <div class="success-summary" id="success-summary"></div>
+        <button class="btn-pay" id="copy-order-btn" style="background:#333;">
+          <i class="fas fa-copy"></i>
+          <span>Copy order details</span>
+        </button>
+        <a class="btn-pay" id="open-whatsapp-again" href="#" target="_blank" rel="noopener" style="background:#25D366; text-decoration:none;">
+          <i class="fab fa-whatsapp"></i>
+          <span>Open WhatsApp again</span>
+        </a>
+        <button class="btn btn-outline" style="width:100%;" id="close-success-btn">Close</button>
       </div>
     </div>
   </div>
@@ -584,6 +630,7 @@
     const SHEET_CSV = "https://docs.google.com/spreadsheets/d/1wQVYVhrrL0S0QHQTxndJ9Hc6YHLf9ZGuHq68x2D91Tg/export?format=csv&gid=0";
     const FALLBACK_IMG = "https://images.pexels.com/photos/1666405/pexels-photo-1666405.jpeg";
     const BASE = "https://jumaabu58-bit.github.io/aj-scents-frontend/";
+    const WA_NUMBER = "256705127282";
 
     const LOCAL_PRODUCTS = [
       { id: 1, name: "Noir Elegance", category: "perfume", price: 185000, image: "https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg" },
@@ -615,6 +662,7 @@
 
     let products = LOCAL_PRODUCTS.slice();
     let cart = [];
+    let lastOrderText = "";
 
     function parseCSV(text) {
       var rows = [];
@@ -702,8 +750,7 @@
       try {
         var sheetRes = await fetch(SHEET_CSV + "&t=" + Date.now());
         var csv = await sheetRes.text();
-        var sheetProducts = productsFromSheet(csv);
-        sheetProducts.forEach(function(p) {
+        productsFromSheet(csv).forEach(function(p) {
           if (usedNames[p.name.toLowerCase()]) return;
           if (usedIds[p.id]) p.id = 1000 + p.id;
           usedIds[p.id] = true;
@@ -851,6 +898,33 @@
       document.getElementById("checkout-modal").classList.remove("open");
     }
 
+    function buildOrderText(name, phone, address, size, color, notes) {
+      var lines = [];
+      lines.push("Hello AJ Scents & More,");
+      lines.push("");
+      lines.push("*New Order*");
+      lines.push("");
+      lines.push("*Name:* " + name);
+      lines.push("*Phone:* " + phone);
+      lines.push("*Address:* " + address);
+      if (size) lines.push("*Size:* " + size);
+      if (color) lines.push("*Colour:* " + color);
+      if (notes) lines.push("*Notes:* " + notes);
+      lines.push("");
+      lines.push("*Items:*");
+      var total = 0;
+      cart.forEach(function(item) {
+        var lineTotal = item.price * item.quantity;
+        total += lineTotal;
+        lines.push("- " + item.name + " x " + item.quantity + " = UGX " + Number(lineTotal).toLocaleString());
+      });
+      lines.push("");
+      lines.push("*Total: UGX " + Number(total).toLocaleString() + "*");
+      lines.push("");
+      lines.push("Please confirm availability, delivery fee, and my order.");
+      return lines.join("\n");
+    }
+
     async function placeOrderStripe() {
       var name = document.getElementById("customer-name").value.trim();
       var phone = document.getElementById("customer-phone").value.trim();
@@ -908,6 +982,10 @@
       var name = document.getElementById("customer-name").value.trim();
       var phone = document.getElementById("customer-phone").value.trim();
       var address = document.getElementById("customer-address").value.trim();
+      var size = document.getElementById("customer-size").value.trim();
+      var color = document.getElementById("customer-color").value.trim();
+      var notes = document.getElementById("customer-notes").value.trim();
+
       if (!name || !phone || !address) {
         alert("Please fill in Name, Phone and Address.");
         return;
@@ -916,32 +994,49 @@
         alert("Your cart is empty.");
         return;
       }
-      var lines = [];
-      lines.push("Hello AJ Scents & More,");
-      lines.push("");
-      lines.push("*New Order*");
-      lines.push("");
-      lines.push("*Name:* " + name);
-      lines.push("*Phone:* " + phone);
-      lines.push("*Address:* " + address);
-      lines.push("");
-      lines.push("*Items:*");
-      var total = 0;
-      cart.forEach(function(item) {
-        var lineTotal = item.price * item.quantity;
-        total += lineTotal;
-        lines.push("- " + item.name + " x " + item.quantity + " = UGX " + Number(lineTotal).toLocaleString());
-      });
-      lines.push("");
-      lines.push("*Total: UGX " + Number(total).toLocaleString() + "*");
-      lines.push("");
-      lines.push("Please confirm my order.");
-      var text = lines.join("\n");
-      window.open("https://wa.me/256705127282?text=" + encodeURIComponent(text), "_blank");
+
+      lastOrderText = buildOrderText(name, phone, address, size, color, notes);
+      var waUrl = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(lastOrderText);
+
+      document.getElementById("success-summary").textContent = lastOrderText;
+      document.getElementById("open-whatsapp-again").href = waUrl;
       document.getElementById("checkout-form-view").style.display = "none";
       document.getElementById("success-message").style.display = "block";
+
+      window.open(waUrl, "_blank");
+
       cart = [];
       updateCartCount();
+    }
+
+    function copyOrderDetails() {
+      if (!lastOrderText) {
+        alert("No order text to copy.");
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(lastOrderText).then(function() {
+          alert("Order details copied. Paste them in WhatsApp.");
+        }).catch(function() {
+          fallbackCopy(lastOrderText);
+        });
+      } else {
+        fallbackCopy(lastOrderText);
+      }
+    }
+
+    function fallbackCopy(text) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand("copy");
+        alert("Order details copied. Paste them in WhatsApp.");
+      } catch (e) {
+        alert("Could not copy automatically. Please copy the text manually.");
+      }
+      document.body.removeChild(ta);
     }
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -949,6 +1044,7 @@
       var params = new URLSearchParams(window.location.search);
       if (params.get("payment") === "success") alert("Payment successful! Order: " + (params.get("order") || ""));
       if (params.get("payment") === "cancelled") alert("Payment was cancelled.");
+
       document.getElementById("shop-now-btn").addEventListener("click", function() {
         document.getElementById("shop-section").scrollIntoView({ behavior: "smooth" });
       });
@@ -961,8 +1057,10 @@
       document.getElementById("continue-btn").addEventListener("click", closeCart);
       document.getElementById("checkout-btn").addEventListener("click", openCheckout);
       document.getElementById("cancel-checkout-btn").addEventListener("click", closeCheckout);
+      document.getElementById("close-success-btn").addEventListener("click", closeCheckout);
       document.getElementById("place-order-btn").addEventListener("click", placeOrderStripe);
       document.getElementById("whatsapp-order-btn").addEventListener("click", placeOrderWhatsApp);
+      document.getElementById("copy-order-btn").addEventListener("click", copyOrderDetails);
     });
   </script>
 </body>
