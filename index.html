@@ -36,6 +36,17 @@
       color: var(--gold);
       letter-spacing: 1px;
     }
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+    .nav-links a {
+      color: #ddd;
+      text-decoration: none;
+    }
+    .nav-links a:hover { color: var(--gold); }
     .cart-icon {
       font-size: 1.4rem;
       cursor: pointer;
@@ -180,6 +191,36 @@
       font-weight: 700;
       font-size: 0.95rem;
       cursor: pointer;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .info-card {
+      background: var(--card);
+      border: 1px solid #333;
+      border-radius: 14px;
+      padding: 22px;
+    }
+    .info-card h3 {
+      color: var(--gold);
+      margin-bottom: 10px;
+      font-size: 1.15rem;
+    }
+    .info-card p, .info-card li {
+      color: #ddd;
+      font-size: 0.98rem;
+      margin-bottom: 8px;
+    }
+    .info-card ul {
+      padding-left: 18px;
+    }
+    .info-card a {
+      color: var(--gold);
+      text-decoration: none;
     }
     .overlay {
       position: fixed;
@@ -349,22 +390,33 @@
       color: #888;
       font-size: 0.9rem;
     }
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+    }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo">AJ SCENTS & MORE</div>
-    <div class="cart-icon" id="cart-icon">
-      <i class="fas fa-shopping-bag"></i>
-      <span class="cart-count" id="cart-count">0</span>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="nav-links">
+        <a href="#shop-section">Shop</a>
+        <a href="#delivery">Delivery</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="cart-icon" id="cart-icon">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count" id="cart-count">0</span>
+      </div>
     </div>
   </header>
 
   <section class="hero">
     <div>
       <h1>Premium Lifestyle Collection</h1>
-      <p>Perfumes, shoes, bags, clothes and watches — all in one place.</p>
+      <p>Perfumes, shoes, bags, clothes and watches — delivered in Kampala.</p>
       <button class="btn" id="shop-now-btn">Shop Now</button>
     </div>
   </section>
@@ -383,6 +435,86 @@
       <button class="filter-btn" data-filter="watches">Watches</button>
     </div>
     <div class="products" id="products"></div>
+  </section>
+
+  <section class="section" id="delivery">
+    <h2>Delivery</h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <h3><i class="fas fa-truck"></i> Kampala Delivery</h3>
+        <ul>
+          <li>We deliver within Kampala and nearby areas</li>
+          <li>Usual delivery: same day or next day</li>
+          <li>Delivery fee depends on your location</li>
+          <li>Fee is confirmed on WhatsApp before dispatch</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3><i class="fas fa-money-bill-wave"></i> Payment Options</h3>
+        <ul>
+          <li>Order on WhatsApp (recommended)</li>
+          <li>Card payment (Stripe)</li>
+          <li>Cash on delivery (where available)</li>
+          <li>Mobile money can be arranged on WhatsApp</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3><i class="fas fa-shield-alt"></i> Simple Policy</h3>
+        <ul>
+          <li>Confirm product availability before payment</li>
+          <li>Check your order on delivery</li>
+          <li>Damaged or wrong item: contact us same day</li>
+          <li>Final details always confirmed on WhatsApp</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <h2>About AJ Scents & More</h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Who we are</h3>
+        <p>
+          AJ Scents & More is a Kampala-based lifestyle shop offering premium perfumes,
+          shoes, bags, clothes and watches.
+        </p>
+        <p>
+          We focus on quality products, fair prices, and fast communication on WhatsApp
+          so ordering stays simple.
+        </p>
+      </div>
+      <div class="info-card">
+        <h3>Why shop with us</h3>
+        <ul>
+          <li>Wide mix: scents, fashion and accessories</li>
+          <li>Easy WhatsApp ordering</li>
+          <li>Local delivery support in Kampala</li>
+          <li>Friendly customer follow-up</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <h2>Contact</h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <h3><i class="fab fa-whatsapp"></i> WhatsApp</h3>
+        <p>Fastest way to order or ask questions.</p>
+        <p><a href="https://wa.me/256705127282" target="_blank" rel="noopener">Chat on WhatsApp: 0705 127 282</a></p>
+      </div>
+      <div class="info-card">
+        <h3><i class="fas fa-phone"></i> Phone</h3>
+        <p>Call or text for product checks and delivery updates.</p>
+        <p><a href="tel:+256705127282">+256 705 127 282</a></p>
+      </div>
+      <div class="info-card">
+        <h3><i class="fas fa-map-marker-alt"></i> Location</h3>
+        <p>Based in Kampala, Uganda.</p>
+        <p>Delivery across Kampala and selected nearby areas.</p>
+      </div>
+    </div>
   </section>
 
   <div class="overlay" id="overlay"></div>
@@ -444,6 +576,7 @@
   <footer>
     <p>© 2026 AJ Scents & More • Kampala, Uganda</p>
     <p style="margin-top:6px;">Perfumes • Shoes • Bags • Clothes • Watches</p>
+    <p style="margin-top:8px;"><a href="https://wa.me/256705127282" style="color:#d4af37; text-decoration:none;">WhatsApp: 0705 127 282</a></p>
   </footer>
 
   <script>
@@ -526,7 +659,6 @@
       var rows = parseCSV(csvText);
       if (rows.length < 2) return [];
       var headers = rows[0].map(function(h) { return h.toLowerCase().trim(); });
-
       function col(names) {
         for (var i = 0; i < names.length; i++) {
           var idx = headers.indexOf(names[i]);
@@ -534,14 +666,12 @@
         }
         return -1;
       }
-
       var iId = col(["id"]);
       var iName = col(["name", "product", "title"]);
       var iCat = col(["category", "type"]);
       var iPrice = col(["price", "amount", "cost"]);
       var iImage = col(["image", "img", "photo", "picture", "url"]);
       if (iName < 0 || iPrice < 0) return [];
-
       var list = [];
       for (var r = 1; r < rows.length; r++) {
         var row = rows[r];
@@ -562,7 +692,6 @@
 
     async function loadProducts() {
       document.getElementById("products").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#888;">Loading products...</div>';
-
       var merged = LOCAL_PRODUCTS.slice();
       var usedIds = {};
       var usedNames = {};
@@ -570,7 +699,6 @@
         usedIds[p.id] = true;
         usedNames[p.name.toLowerCase()] = true;
       });
-
       try {
         var sheetRes = await fetch(SHEET_CSV + "&t=" + Date.now());
         var csv = await sheetRes.text();
@@ -582,10 +710,7 @@
           usedNames[p.name.toLowerCase()] = true;
           merged.push(p);
         });
-      } catch (e) {
-        console.log("Sheet load failed", e);
-      }
-
+      } catch (e) {}
       try {
         var res = await fetch(API_BASE + "/api/products");
         var result = await res.json();
@@ -606,10 +731,7 @@
             merged.push(item);
           });
         }
-      } catch (e2) {
-        console.log("Backend load failed");
-      }
-
+      } catch (e2) {}
       products = merged;
       renderProducts(products);
     }
@@ -794,7 +916,6 @@
         alert("Your cart is empty.");
         return;
       }
-
       var lines = [];
       lines.push("Hello AJ Scents & More,");
       lines.push("");
@@ -805,23 +926,18 @@
       lines.push("*Address:* " + address);
       lines.push("");
       lines.push("*Items:*");
-
       var total = 0;
       cart.forEach(function(item) {
         var lineTotal = item.price * item.quantity;
         total += lineTotal;
         lines.push("- " + item.name + " x " + item.quantity + " = UGX " + Number(lineTotal).toLocaleString());
       });
-
       lines.push("");
       lines.push("*Total: UGX " + Number(total).toLocaleString() + "*");
       lines.push("");
       lines.push("Please confirm my order.");
-
       var text = lines.join("\n");
-      var url = "https://wa.me/256705127282?text=" + encodeURIComponent(text);
-      window.open(url, "_blank");
-
+      window.open("https://wa.me/256705127282?text=" + encodeURIComponent(text), "_blank");
       document.getElementById("checkout-form-view").style.display = "none";
       document.getElementById("success-message").style.display = "block";
       cart = [];
@@ -833,7 +949,6 @@
       var params = new URLSearchParams(window.location.search);
       if (params.get("payment") === "success") alert("Payment successful! Order: " + (params.get("order") || ""));
       if (params.get("payment") === "cancelled") alert("Payment was cancelled.");
-
       document.getElementById("shop-now-btn").addEventListener("click", function() {
         document.getElementById("shop-section").scrollIntoView({ behavior: "smooth" });
       });
