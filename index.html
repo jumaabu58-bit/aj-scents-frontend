@@ -551,11 +551,9 @@
     <div class="checkout-box">
       <div id="checkout-form-view">
         <h2>Checkout</h2>
-
         <div class="checkout-note">
           Delivery fee is confirmed on WhatsApp based on your area. Please include size/colour for clothes and shoes.
         </div>
-
         <div class="form-group">
           <label>Full Name *</label>
           <input type="text" id="customer-name" placeholder="Enter your full name">
@@ -581,9 +579,7 @@
           <label>Notes (optional)</label>
           <textarea id="customer-notes" placeholder="Any extra details for your order"></textarea>
         </div>
-
         <div class="order-summary" id="order-summary"></div>
-
         <button class="btn-pay" id="place-order-btn" style="background:#635bff;">
           <i class="fas fa-credit-card"></i>
           <span>Pay with Card (Stripe)</span>
@@ -594,7 +590,6 @@
         </button>
         <button class="btn btn-outline" style="width:100%;" id="cancel-checkout-btn">Cancel</button>
       </div>
-
       <div class="success-message" id="success-message">
         <i class="fas fa-check-circle"></i>
         <h2 style="color:#4ade80; margin-bottom:8px;">Order ready!</h2>
@@ -739,7 +734,10 @@
     }
 
     async function loadProducts() {
-      document.getElementById("products").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#888;">Loading products...</div>';
+      // Show local products immediately so page never stays blank
+      products = LOCAL_PRODUCTS.slice();
+      renderProducts(products);
+
       var merged = LOCAL_PRODUCTS.slice();
       var usedIds = {};
       var usedNames = {};
@@ -747,8 +745,13 @@
         usedIds[p.id] = true;
         usedNames[p.name.toLowerCase()] = true;
       });
+
+      // Google Sheet (8s timeout)
       try {
-        var sheetRes = await fetch(SHEET_CSV + "&t=" + Date.now());
+        var controller1 = new AbortController();
+        var t1 = setTimeout(function() { controller1.abort(); }, 8000);
+        var sheetRes = await fetch(SHEET_CSV + "&t=" + Date.now(), { signal: controller1.signal });
+        clearTimeout(t1);
         var csv = await sheetRes.text();
         productsFromSheet(csv).forEach(function(p) {
           if (usedNames[p.name.toLowerCase()]) return;
@@ -757,9 +760,16 @@
           usedNames[p.name.toLowerCase()] = true;
           merged.push(p);
         });
+        products = merged;
+        renderProducts(products);
       } catch (e) {}
+
+      // Backend (8s timeout)
       try {
-        var res = await fetch(API_BASE + "/api/products");
+        var controller2 = new AbortController();
+        var t2 = setTimeout(function() { controller2.abort(); }, 8000);
+        var res = await fetch(API_BASE + "/api/products", { signal: controller2.signal });
+        clearTimeout(t2);
         var result = await res.json();
         if (result.success && result.data && result.data.length) {
           result.data.forEach(function(p) {
@@ -777,10 +787,10 @@
             usedNames[item.name.toLowerCase()] = true;
             merged.push(item);
           });
+          products = merged;
+          renderProducts(products);
         }
       } catch (e2) {}
-      products = merged;
-      renderProducts(products);
     }
 
     function renderProducts(list) {
@@ -985,7 +995,6 @@
       var size = document.getElementById("customer-size").value.trim();
       var color = document.getElementById("customer-color").value.trim();
       var notes = document.getElementById("customer-notes").value.trim();
-
       if (!name || !phone || !address) {
         alert("Please fill in Name, Phone and Address.");
         return;
@@ -994,17 +1003,13 @@
         alert("Your cart is empty.");
         return;
       }
-
       lastOrderText = buildOrderText(name, phone, address, size, color, notes);
       var waUrl = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(lastOrderText);
-
       document.getElementById("success-summary").textContent = lastOrderText;
       document.getElementById("open-whatsapp-again").href = waUrl;
       document.getElementById("checkout-form-view").style.display = "none";
       document.getElementById("success-message").style.display = "block";
-
       window.open(waUrl, "_blank");
-
       cart = [];
       updateCartCount();
     }
