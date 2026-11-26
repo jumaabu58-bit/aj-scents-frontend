@@ -431,6 +431,7 @@
         <a href="#tracker">Track</a>
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
+        <a href="https://www.instagram.com/juma.abu.79/" target="_blank" rel="noopener">Instagram</a>
       </div>
       <div class="cart-icon" id="cart-icon">
         <i class="fas fa-shopping-bag"></i>
@@ -514,7 +515,6 @@
           </iframe>
         </div>
       </div>
-
       <div class="info-card">
         <h3><i class="fas fa-location-arrow"></i> Open your address in Maps</h3>
         <p>Paste your delivery area or address to view it on Google Maps.</p>
@@ -533,7 +533,6 @@
           <span>Ask delivery update on WhatsApp</span>
         </a>
       </div>
-
       <div class="info-card">
         <h3><i class="fas fa-route"></i> Order progress</h3>
         <p style="margin-bottom:12px;">Typical delivery flow:</p>
@@ -582,6 +581,23 @@
         <h3><i class="fas fa-phone"></i> Phone</h3>
         <p>Call or text for product checks and delivery updates.</p>
         <p><a href="tel:+256705127282">+256 705 127 282</a></p>
+      </div>
+      <div class="info-card">
+        <h3><i class="fab fa-instagram"></i> Instagram</h3>
+        <p>See new arrivals, stories, and product photos.</p>
+        <p>
+          <a href="https://www.instagram.com/juma.abu.79/" target="_blank" rel="noopener">
+            @juma.abu.79
+          </a>
+        </p>
+        <a class="btn-pay"
+           href="https://www.instagram.com/juma.abu.79/"
+           target="_blank"
+           rel="noopener"
+           style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); margin-top:10px; text-decoration:none;">
+          <i class="fab fa-instagram"></i>
+          <span>Shop on Instagram</span>
+        </a>
       </div>
       <div class="info-card">
         <h3><i class="fas fa-map-marker-alt"></i> Location</h3>
@@ -677,7 +693,11 @@
   <footer>
     <p>© 2026 AJ Scents & More • Kampala, Uganda</p>
     <p style="margin-top:6px;">Perfumes • Shoes • Bags • Clothes • Watches</p>
-    <p style="margin-top:8px;"><a href="https://wa.me/256705127282" style="color:#d4af37; text-decoration:none;">WhatsApp: 0705 127 282</a></p>
+    <p style="margin-top:8px;">
+      <a href="https://wa.me/256705127282" style="color:#d4af37; text-decoration:none;">WhatsApp: 0705 127 282</a>
+      &nbsp;•&nbsp;
+      <a href="https://www.instagram.com/juma.abu.79/" style="color:#d4af37; text-decoration:none;" target="_blank" rel="noopener">Instagram @juma.abu.79</a>
+    </p>
   </footer>
 
   <script>
@@ -1123,7 +1143,6 @@
       document.getElementById("place-order-btn").addEventListener("click", placeOrderStripe);
       document.getElementById("whatsapp-order-btn").addEventListener("click", placeOrderWhatsApp);
       document.getElementById("copy-order-btn").addEventListener("click", copyOrderDetails);
-
       document.getElementById("open-maps-btn").addEventListener("click", function() {
         var addr = document.getElementById("track-address").value.trim();
         if (!addr) {
